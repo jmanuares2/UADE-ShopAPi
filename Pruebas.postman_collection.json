@@ -89,10 +89,19 @@
         {
           "name": "EliminarCat",
           "request": {
-            "method": "GET",
+            "method": "DELETE",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "localhost:8080/api/categorias/4",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "categorias",
+                "4"
+              ]
             }
           },
           "response": []
@@ -109,7 +118,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "localhost:8080/api/usuarios/3",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "usuarios",
+                "3"
+              ]
             }
           },
           "response": []
@@ -488,7 +506,16 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "localhost:8080/api/carrito/checkout",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "carrito",
+                "checkout"
+              ]
             }
           },
           "response": []
