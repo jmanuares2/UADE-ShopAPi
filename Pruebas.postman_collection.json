@@ -27,70 +27,24 @@
   "item": [
     {
       "name": "Autenticacion",
-      "description": "IMPORTANTE: Ejecutar en este orden:\n1. 'RegistrarUsuario' → Crea la cuenta en la base de datos (solo la primera vez).\n2. 'Login' → Obtiene el token JWT y lo guarda automaticamente en la variable {{jwt_token}}.\nTodos los endpoints protegidos del resto de la coleccion usaran ese token sin necesidad de configuracion adicional.",
+      "description": "Ejecutar primero 'Login Admin - Guarda Token'. El token ADMIN se usa en toda la coleccion automaticamente.",
       "item": [
         {
-          "name": "RegistrarUsuario",
+          "name": "Login Admin - Guarda Token",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "// Verifica que el registro fue exitoso",
-                  "pm.test('Registro exitoso (200 OK)', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "console.log('Paso 1/2 completado: Usuario registrado. Ahora ejecuta Login para obtener el token.');"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"nombreUsuario\": \"nuevoUser\",\r\n  \"nombre\": \"Nuevo\",\r\n  \"apellido\": \"Usuario\",\r\n  \"email\": \"nuevo@email.com\",\r\n  \"password\": \"123456\"\r\n}\r\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "localhost:8080/api/auth/register",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "auth",
-                "register"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Login - Guarda Token Automaticamente",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// Captura el token JWT, le quita espacios/saltos de linea y lo guarda en la variable de entorno.",
-                  "// El pre-request script de la coleccion lo inyecta automaticamente en todos los requests.",
                   "const token = (pm.response.text() || '').trim();",
                   "if (token.length > 0) {",
                   "    pm.environment.set('jwt_token', token);",
-                  "    console.log('Token JWT guardado correctamente.');",
-                  "    pm.test('Login exitoso - Token recibido', function () {",
+                  "    console.log('Token ADMIN guardado correctamente en jwt_token.');",
+                  "    pm.test('Login Admin exitoso - Token recibido', function () {",
                   "        pm.response.to.have.status(200);",
                   "    });",
                   "} else {",
-                  "    console.error('ERROR: No se recibio token. Verificar que XAMPP/MySQL este corriendo y el usuario exista.');",
+                  "    console.error('ERROR: No se recibio token. Verificar XAMPP/MySQL y que exista el usuario admin (DataSeedingConfig).');",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -99,10 +53,15 @@
           ],
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"email\": \"nuevo@email.com\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+              "raw": "{\n  \"email\": \"admin@tienda.com\",\n  \"password\": \"admin123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -111,15 +70,9 @@
             },
             "url": {
               "raw": "localhost:8080/api/auth/login",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
+              "path": ["api", "auth", "login"]
             }
           },
           "response": []
@@ -128,6 +81,7 @@
     },
     {
       "name": "Categorias",
+      "description": "Categorias: solo ADMIN puede crear, modificar y eliminar. El token del paso anterior lo permite.",
       "item": [
         {
           "name": "ObtenerCategoriaID",
@@ -135,22 +89,35 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8080/api/categorias/3",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/categorias/1",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "categorias",
-                "3"
-              ]
+              "path": ["api", "categorias", "1"]
             }
           },
           "response": []
         },
         {
           "name": "CrearCategoria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Guarda el ID de la categoria recien creada para usarlo en PUT y DELETE.",
+                  "pm.test('Categoria creada (201)', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "    pm.environment.set('categoria_id', json.id);",
+                  "    console.log('categoria_id guardado:', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -165,14 +132,9 @@
             },
             "url": {
               "raw": "localhost:8080/api/categorias",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "categorias"
-              ]
+              "path": ["api", "categorias"]
             }
           },
           "response": []
@@ -192,16 +154,10 @@
               }
             },
             "url": {
-              "raw": "localhost:8080/api/categorias/4",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/categorias/{{categoria_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "categorias",
-                "4"
-              ]
+              "path": ["api", "categorias", "{{categoria_id}}"]
             }
           },
           "response": []
@@ -212,48 +168,41 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "localhost:8080/api/categorias/4",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/categorias/{{categoria_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "categorias",
-                "4"
-              ]
+              "path": ["api", "categorias", "{{categoria_id}}"]
             }
           },
           "response": []
         }
-      ],
-      "description": "Categorias, aca se deberia poder acceder de acuerdo a lo que queramos, un usuario no deberia poder eliminar categorias o incluso agregarlas si no tiene los permisos"
+      ]
     },
     {
       "name": "Usuarios",
+      "description": "Usuarios: solo ADMIN puede gestionarlos.",
       "item": [
         {
-          "name": "ObtenerUsu",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "localhost:8080/api/usuarios/3",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "usuarios",
-                "3"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "AgregarUsuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Guarda el ID del usuario creado para usarlo en PUT y DELETE.",
+                  "pm.test('Usuario creado (201)', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "    pm.environment.set('usuario_id', json.id);",
+                  "    console.log('usuario_id guardado:', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -268,14 +217,23 @@
             },
             "url": {
               "raw": "localhost:8080/api/usuarios",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "usuarios"
-              ]
+              "path": ["api", "usuarios"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ObtenerUsu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:8080/api/usuarios/{{usuario_id}}",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "usuarios", "{{usuario_id}}"]
             }
           },
           "response": []
@@ -295,16 +253,10 @@
               }
             },
             "url": {
-              "raw": "localhost:8080/api/usuarios/3",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/usuarios/{{usuario_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "usuarios",
-                "3"
-              ]
+              "path": ["api", "usuarios", "{{usuario_id}}"]
             }
           },
           "response": []
@@ -315,28 +267,41 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "localhost:8080/api/usuarios/3",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/usuarios/{{usuario_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "usuarios",
-                "3"
-              ]
+              "path": ["api", "usuarios", "{{usuario_id}}"]
             }
           },
           "response": []
         }
-      ],
-      "description": "Usuarios, aca se deberia poder acceder de acuerdo a lo que queramos, un usuario normal no deberia poder acceder, salvo a modificarse el mismo y obtener solo sus datos"
+      ]
     },
     {
       "name": "Productos",
+      "description": "Productos: GET es publico, POST/PUT/DELETE requieren autenticacion.",
       "item": [
         {
           "name": "CrearProdu",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Guarda el ID del producto creado para usarlo en GET, PUT y DELETE.",
+                  "pm.test('Producto creado (201)', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "    pm.environment.set('producto_id', json.id);",
+                  "    console.log('producto_id guardado:', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -350,16 +315,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/productos",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/productos",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "productos"
-              ]
+              "path": ["api", "productos"]
             }
           },
           "response": []
@@ -370,16 +329,10 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8080/api/productos/4",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/productos/{{producto_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "productos",
-                "4"
-              ]
+              "path": ["api", "productos", "{{producto_id}}"]
             }
           },
           "response": []
@@ -391,16 +344,9 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/productos/categoria/1",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "productos",
-                "categoria",
-                "1"
-              ]
+              "path": ["api", "productos", "categoria", "1"]
             }
           },
           "response": []
@@ -421,15 +367,9 @@
             },
             "url": {
               "raw": "localhost:8080/api/productos/1",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "productos",
-                "1"
-              ]
+              "path": ["api", "productos", "1"]
             }
           },
           "response": []
@@ -440,26 +380,19 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/productos/3",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/productos/{{producto_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "productos",
-                "3"
-              ]
+              "path": ["api", "productos", "{{producto_id}}"]
             }
           },
           "response": []
         }
-      ],
-      "description": "Productos, aca se deberia poder acceder de acuerdo a lo que queramos, un usuario no deberia poder eliminar productos si no tiene los permisos por ejemplo. Revisar token de auth para hacer pruebas"
+      ]
     },
     {
       "name": "Carrito",
+      "description": "Carrito del admin. Flujo: ver → agregar → checkout → eliminar item → vaciar.",
       "item": [
         {
           "name": "VerCarritoDeUsuario",
@@ -468,20 +401,98 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/carrito",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "carrito"
-              ]
+              "path": ["api", "carrito"]
             }
           },
           "response": []
         },
         {
           "name": "AgregarItemCarrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Guarda el ID del item del carrito para poder eliminarlo despues.",
+                  "const json = pm.response.json();",
+                  "if (json && json.items && json.items.length > 0) {",
+                  "    const lastItem = json.items[json.items.length - 1];",
+                  "    pm.environment.set('carrito_item_id', lastItem.id);",
+                  "    console.log('carrito_item_id guardado:', lastItem.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"productoId\": 1,\r\n  \"cantidad\": 2\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:8080/api/carrito/items",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "carrito", "items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CheckOut",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Checkout exitoso (200)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "localhost:8080/api/carrito/checkout",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "carrito", "checkout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AgregarItemParaEliminar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.items && json.items.length > 0) {",
+                  "    const lastItem = json.items[json.items.length - 1];",
+                  "    pm.environment.set('carrito_item_id', lastItem.id);",
+                  "    console.log('carrito_item_id (para eliminar) guardado:', lastItem.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -496,15 +507,9 @@
             },
             "url": {
               "raw": "localhost:8080/api/carrito/items",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "carrito",
-                "items"
-              ]
+              "path": ["api", "carrito", "items"]
             }
           },
           "response": []
@@ -515,17 +520,10 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "localhost:8080/api/carrito/items/1",
-              "host": [
-                "localhost"
-              ],
+              "raw": "localhost:8080/api/carrito/items/{{carrito_item_id}}",
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "carrito",
-                "items",
-                "1"
-              ]
+              "path": ["api", "carrito", "items", "{{carrito_item_id}}"]
             }
           },
           "response": []
@@ -537,41 +535,14 @@
             "header": [],
             "url": {
               "raw": "localhost:8080/api/carrito/clear",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "carrito",
-                "clear"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "CheckOut",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "localhost:8080/api/carrito/checkout",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "carrito",
-                "checkout"
-              ]
+              "path": ["api", "carrito", "clear"]
             }
           },
           "response": []
         }
-      ],
-      "description": "Este es el carrito, aqui debemos utilizar un token de usuario para poder visualizar como seria su flujo"
+      ]
     }
   ]
 }
