@@ -2,6 +2,7 @@ package com.uade.tpo.e_commerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,8 +59,16 @@ class AuthenticationServiceTest {
 
         AuthResponse response = authenticationService.register(request);
 
-        assertEquals("User registered successfully", response);
-        assertNotNull(usuarioRepository.findByEmail("new@test.com").orElse(null));
+        assertNotNull(response);
+        assertNotNull(response.getUserId());
+        assertNotNull(response.getToken());
+        assertEquals("USER", response.getRole());
+
+        Usuario savedUser = usuarioRepository.findByEmail("new@test.com").orElse(null);
+        assertNotNull(savedUser);
+        assertEquals("newuser", savedUser.getNombreUsuario());
+        assertEquals(Role.USER, savedUser.getRole());
+        assertNotEquals("123456", savedUser.getPassword());
     }
 
     @Test
