@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleFavorite } from '../store/favoritesSlice';
+import { addToCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
-import { useFavorite } from '../context/FavoriteContext';
 import { API_URL, authHeaders } from '../services/api';
 
 function ProductCard({ product, onAddToCart }) {
   const { user } = useAuth();
 
-  // Usamos el contexto de favoritos para leer la lista actual
-  // y para poder agregar/quitar este producto.
-  const { favoriteItems, addToFavorite } = useFavorite();
+  // useDispatch permite ejecutar acciones sobre el store de Redux
+  const dispatch = useDispatch();
+
+  // useSelector lee el estado de favoritos del store
+  const favoriteItems = useSelector((state) => state.favorites.items);
   const [msg, setMsg] = useState(null);
   const [msgType, setMsgType] = useState('success');
 
@@ -32,6 +36,7 @@ function ProductCard({ product, onAddToCart }) {
         body: JSON.stringify({ productoId: product.id, cantidad: 1 }),
       });
       if (!response.ok) throw new Error('No se pudo agregar al carrito');
+      dispatch(addToCart(product));
       if (onAddToCart) onAddToCart();
       showMsg('Producto agregado al carrito');
     } catch (err) {
@@ -70,7 +75,7 @@ function ProductCard({ product, onAddToCart }) {
           {user && (
             <button
               className={isFavorite ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'}
-              onClick={() => addToFavorite(product)}
+              onClick={() => dispatch(toggleFavorite(product))}
               title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             >
               {isFavorite ? '♥' : '♡'}
