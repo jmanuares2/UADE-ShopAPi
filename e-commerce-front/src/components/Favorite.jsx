@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useFavorite } from '../context/FavoriteContext';
+import { useSelector } from 'react-redux';
 import ProductCard from './ProductCard';
 
 function Favorite() {
@@ -7,8 +7,8 @@ function Favorite() {
   // por ejemplo al tocar el boton "Ver productos".
   const navigate = useNavigate();
 
-  // Traemos el listado global de favoritos desde el contexto.
-  const { favoriteItems } = useFavorite();
+  // useSelector lee la lista de favoritos del store de Redux
+  const favoriteItems = useSelector((state) => state.favorites.items);
 
   return (
     <div className="container mt-4">

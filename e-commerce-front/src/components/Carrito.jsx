@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import { API_URL, authHeaders } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { removeFromCart, emptyCart } from '../store/cartSlice';
+import { useSelector, useDispatch } from 'react-redux';
+
 
 function Carrito() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [carrito, setCarrito] = useState(null);
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [checkoutMsg, setCheckoutMsg] = useState(null);
@@ -39,7 +43,7 @@ function Carrito() {
         headers: authHeaders(),
       });
       if (!response.ok) throw new Error('Error al eliminar el item');
-      setCarrito(await response.json());
+      dispatch(removeFromCart(itemId));
     } catch (err) {
       setErrorMsg(err.message);
     }
@@ -53,7 +57,7 @@ function Carrito() {
         headers: authHeaders(),
       });
       if (!response.ok) throw new Error('Error al vaciar el carrito');
-      setCarrito(await response.json());
+      dispatch(emptyCart());
     } catch (err) {
       setErrorMsg(err.message);
     }
@@ -69,21 +73,20 @@ function Carrito() {
       if (!response.ok) throw new Error('Error en el checkout');
       const msg = await response.text();
       setCheckoutMsg(msg);
-      fetchCarrito();
+      dispatch(emptyCart());
     } catch (err) {
       setErrorMsg(err.message);
     }
   };
 
   if (!user) return null;
+
   if (loading) return (
     <div className="container mt-5 text-center">
       <div className="spinner-border text-primary" role="status"></div>
     </div>
   );
   if (error) return <div className="container mt-4"><p className="text-danger">{error}</p></div>;
-
-  const items = carrito?.items || [];
 
   return (
     <div className="container mt-4">
@@ -103,7 +106,7 @@ function Carrito() {
         </div>
       )}
 
-      {items.length === 0 ? (
+      {cartItems.length === 0 ? (
         <div className="text-center py-5">
           <p className="text-muted fs-5">Tu carrito está vacío.</p>
           <button className="btn btn-primary" onClick={() => navigate('/')}>Ver productos</button>
@@ -122,7 +125,7 @@ function Carrito() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {cartItems.map((item) => (
                   <tr key={item.id}>
                     <td>{item.productoNombre || item.nombreProducto || item.producto?.nombre || '—'}</td>
                     <td>${item.precioUnitario?.toFixed(2)}</td>
@@ -148,7 +151,7 @@ function Carrito() {
             </button>
             <div className="text-end">
               <p className="fs-5 fw-bold mb-2">
-                Total: ${carrito?.total?.toFixed(2) ?? items.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0).toFixed(2)}
+                Total: ${cartItems.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0).toFixed(2)}
               </p>
               <button className="btn btn-success btn-lg" onClick={handleCheckout}>
                 Confirmar compra
