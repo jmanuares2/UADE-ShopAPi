@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { API_URL, authHeaders } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { useFavorite } from '../context/FavoriteContext';
+import { toggleFavorite } from '../store/favoritesSlice';
+import { setCart } from '../store/cartSlice';
 
 function ProductDetail() {
   // useParams lee parametros de la URL.
@@ -12,9 +14,9 @@ function ProductDetail() {
   // useNavigate permite movernos entre pantallas desde funciones.
   const navigate = useNavigate();
   const { user } = useAuth();
+  const dispatch = useDispatch();
 
-  // Traemos favoritos para poder usar el corazon tambien en el detalle.
-  const { favoriteItems, addToFavorite } = useFavorite();
+  const favoriteItems = useSelector((state) => state.favorites.items);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,6 +45,8 @@ function ProductDetail() {
         body: JSON.stringify({ productoId: product.id, cantidad: 1 }),
       });
       if (!response.ok) throw new Error('No se pudo agregar al carrito');
+      const carrito = await response.json();
+      dispatch(setCart(carrito.items ?? []));
       alert('Producto agregado al carrito');
     } catch (err) {
       alert(err.message);
@@ -97,7 +101,7 @@ function ProductDetail() {
             <div className="d-flex gap-2 mt-2">
               <button
                 className={isFavorite ? 'btn btn-danger' : 'btn btn-outline-danger'}
-                onClick={() => addToFavorite(product)}
+                onClick={() => dispatch(toggleFavorite(product))}
               >
                 {isFavorite ? '♥ Quitar de favoritos' : '♡ Agregar a favoritos'}
               </button>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavorite } from '../store/favoritesSlice';
-import { addToCart } from '../store/cartSlice';
+import { setCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
 import { API_URL, authHeaders } from '../services/api';
 
@@ -36,7 +36,8 @@ function ProductCard({ product, onAddToCart }) {
         body: JSON.stringify({ productoId: product.id, cantidad: 1 }),
       });
       if (!response.ok) throw new Error('No se pudo agregar al carrito');
-      dispatch(addToCart(product));
+      const carrito = await response.json();
+      dispatch(setCart(carrito.items ?? []));
       if (onAddToCart) onAddToCart();
       showMsg('Producto agregado al carrito');
     } catch (err) {

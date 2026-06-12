@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { API_URL, authHeaders } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { removeFromCart, emptyCart } from '../store/cartSlice';
+import { setCart, emptyCart } from '../store/cartSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -27,7 +27,8 @@ function Carrito() {
     try {
       const response = await fetch(`${API_URL}/carrito`, { headers: authHeaders() });
       if (!response.ok) throw new Error('Error al cargar el carrito');
-      setCarrito(await response.json());
+      const carrito = await response.json();
+      dispatch(setCart(carrito.items ?? []));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -43,7 +44,8 @@ function Carrito() {
         headers: authHeaders(),
       });
       if (!response.ok) throw new Error('Error al eliminar el item');
-      dispatch(removeFromCart(itemId));
+      const carrito = await response.json();
+      dispatch(setCart(carrito.items ?? []));
     } catch (err) {
       setErrorMsg(err.message);
     }
@@ -57,7 +59,8 @@ function Carrito() {
         headers: authHeaders(),
       });
       if (!response.ok) throw new Error('Error al vaciar el carrito');
-      dispatch(emptyCart());
+      const carrito = await response.json();
+      dispatch(setCart(carrito.items ?? []));
     } catch (err) {
       setErrorMsg(err.message);
     }
