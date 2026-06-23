@@ -1,13 +1,6 @@
 import { Link } from 'react-router-dom';
-import ProductList from './ProductList';
-import { useAuth } from '../context/AuthContext';
 
 function Home() {
-  const { user } = useAuth();
-
-  if (user) {
-    return <ProductList />;
-  }
 
   return (
     <>
@@ -31,7 +24,6 @@ function Home() {
 
       <div style={{ fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
 
-        {/* Hero */}
         <div style={{
         minHeight: '70vh',
         background: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url("https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=2072&auto=format&fit=crop")',
@@ -70,7 +62,6 @@ function Home() {
           </Link>
         </div>
 
-        {/* Beneficios */}
         <div style={{ background: '#f8f8f8', padding: '48px 24px' }}>
           <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {[
@@ -100,7 +91,6 @@ function Home() {
           </div>
         </div>
 
-        {/* Footer */}
         <div style={{ background: '#111', color: '#fff', padding: '18px 24px', textAlign: 'center' }}>
           <p style={{ fontSize: 12, opacity: 0.4, letterSpacing: '0.06em' }}>© 2026 UADE Shop — Todos los derechos reservados</p>
         </div>
