@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleFavorite } from '../store/favoritesSlice';
+import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import { setCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
 import { API_URL, authHeaders } from '../services/api';
@@ -76,7 +76,13 @@ function ProductCard({ product, onAddToCart }) {
           {user && (
             <button
               className={isFavorite ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'}
-              onClick={() => dispatch(toggleFavorite(product))}
+              onClick={() => {
+                if (isFavorite) {
+                  dispatch(removeFavorite(product.id));
+                } else {
+                  dispatch(addFavorite(product));
+                }
+              }}
               title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             >
               {isFavorite ? '♥' : '♡'}

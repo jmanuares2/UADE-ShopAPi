@@ -1,13 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFavorites } from '../store/favoritesSlice';
 import ProductCard from './ProductCard';
 
 function Favorite() {
-  // useNavigate nos permite cambiar de pantalla desde codigo,
-  // por ejemplo al tocar el boton "Ver productos".
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // useSelector lee la lista de favoritos del store de Redux
+  useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
+
   const favoriteItems = useSelector((state) => state.favorites.items);
 
   return (

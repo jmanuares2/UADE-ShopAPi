@@ -69,6 +69,11 @@ public class Usuario implements UserDetails {
     @Builder.Default
     private List<Producto> productosPublicados = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Favorito> favoritos = new ArrayList<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + (role != null ? role.name() : "USER")));

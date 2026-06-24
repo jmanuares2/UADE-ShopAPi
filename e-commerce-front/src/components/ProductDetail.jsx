@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_URL, authHeaders } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { toggleFavorite } from '../store/favoritesSlice';
+import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import { setCart } from '../store/cartSlice';
 
 function ProductDetail() {
@@ -101,7 +101,13 @@ function ProductDetail() {
             <div className="d-flex gap-2 mt-2">
               <button
                 className={isFavorite ? 'btn btn-danger' : 'btn btn-outline-danger'}
-                onClick={() => dispatch(toggleFavorite(product))}
+                onClick={() => {
+                  if (isFavorite) {
+                    dispatch(removeFavorite(product.id));
+                  } else {
+                    dispatch(addFavorite(product));
+                  }
+                }}
               >
                 {isFavorite ? '♥ Quitar de favoritos' : '♡ Agregar a favoritos'}
               </button>
