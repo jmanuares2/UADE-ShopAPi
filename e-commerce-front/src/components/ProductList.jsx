@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../services/api';
 import ProductCard from './ProductCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFavorites } from '../store/favoritesSlice';
+
 
 function ProductList() {
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
@@ -45,6 +49,11 @@ function ProductList() {
 
     fetchProducts();
   }, [categoriaSeleccionada]);
+
+  useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
+
 
   return (
     <div className="container mt-4">
