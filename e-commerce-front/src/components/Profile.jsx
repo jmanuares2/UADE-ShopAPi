@@ -32,11 +32,19 @@ function Profile() {
             </span>
           </p>
           <hr />
-          <div className="d-flex gap-2">
+          <div className="d-flex flex-wrap gap-2">
             {user.role === 'ADMIN' && (
-              <button className="btn btn-outline-warning" onClick={() => navigate('/admin/productos')}>
-                Panel Admin
-              </button>
+              <>
+                <button className="btn btn-outline-warning" onClick={() => navigate('/admin/productos')}>
+                  Panel Productos
+                </button>
+                <button className="btn btn-outline-warning" onClick={() => navigate('/admin/categorias')}>
+                  Panel Categorías
+                </button>
+                <button className="btn btn-outline-warning" onClick={() => navigate('/admin/usuarios')}>
+                  Panel Usuarios
+                </button>
+              </>
             )}
             <button className="btn btn-outline-primary" onClick={() => navigate('/carrito')}>
               Ver carrito

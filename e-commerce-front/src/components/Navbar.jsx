@@ -38,8 +38,16 @@ function Navbar() {
           <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
             <ul className="navbar-nav me-auto fw-medium">
               {isAdmin && (
-                <li className="nav-item">
-                  <Link className="nav-link px-3" to="/admin/productos" onClick={() => setIsOpen(false)}>Admin Productos</Link>
+                <li className="nav-item dropdown">
+                  <a className="nav-link px-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Panel Admin
+                  </a>
+                  <ul className="dropdown-menu">
+                    <li><Link className="dropdown-item" to="/admin/productos" onClick={() => setIsOpen(false)}>Productos</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/categorias" onClick={() => setIsOpen(false)}>Categorías</Link></li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><Link className="dropdown-item" to="/admin/usuarios" onClick={() => setIsOpen(false)}>Usuarios</Link></li>
+                  </ul>
                 </li>
               )}
               {user && (
@@ -59,7 +67,7 @@ function Navbar() {
             <ul className="navbar-nav ms-auto align-items-center">
               {!user ? (
                 <li className="nav-item">
-                  <Link to="/login" className="nav-link nav-cuenta-link fw-semibold" onClick={() => setIsOpen(false)}>Cuenta</Link>
+                  <Link to="/login" className="nav-link nav-cuenta-link fw-semibold" onClick={() => setIsOpen(false)}>Ingresar / Registrarse</Link>
                 </li>
               ) : (
                 <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">

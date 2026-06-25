@@ -9,6 +9,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import AdminProductList from './components/AdminProductList';
+import AdminCategorias from './components/admin/AdminCategorias';
+import AdminUsuarios from './components/admin/AdminUsuarios';
 import Carrito from './components/Carrito';
 import Favorite from './components/Favorite';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -35,7 +37,31 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/admin/productos" element={<AdminProductList />} />
+          {/* Rutas de Admin protegidas */}
+          <Route
+            path="/admin/productos"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminProductList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categorias"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminCategorias />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/usuarios"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminUsuarios />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
