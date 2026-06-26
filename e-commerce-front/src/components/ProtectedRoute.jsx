@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 // Si hay usuario logueado, muestra el contenido.
 // Si no hay usuario, manda al login.
 // Si se provee requiredRole, verifica además que el rol coincida.
-function ProtectedRoute({ children, requiredRole }) {
+function ProtectedRoute({ children, requiredRole, allowedRoles }) {
   const { user } = useAuth();
 
   if (!user) {
@@ -13,6 +13,10 @@ function ProtectedRoute({ children, requiredRole }) {
   }
 
   if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 

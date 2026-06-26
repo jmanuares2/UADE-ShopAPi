@@ -14,7 +14,7 @@ function AdminProductList() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'VENDEDOR')) {
       navigate('/');
     }
   }, [user, navigate]);
@@ -24,7 +24,11 @@ function AdminProductList() {
     setError(null);
     try {
       const response = await api.get('/productos');
-      setProducts(response.data);
+      if (user?.role === 'VENDEDOR') {
+        setProducts(response.data.filter((p) => p.creadorId === user.userId));
+      } else {
+        setProducts(response.data);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar productos');
     } finally {
@@ -66,12 +70,12 @@ function AdminProductList() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!user || user.role !== 'ADMIN') return null;
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'VENDEDOR')) return null;
 
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Panel Admin — Productos</h2>
+        <h2>{user?.role === 'VENDEDOR' ? 'Panel Vendedor — Mis Productos' : 'Panel Admin — Productos'}</h2>
         <button className="btn btn-success" onClick={handleNew}>+ Nuevo producto</button>
       </div>
 

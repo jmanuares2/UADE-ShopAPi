@@ -88,10 +88,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
 
-                        // Protegidos: productos
-                        .requestMatchers(HttpMethod.POST, "/api/productos").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
+                        // Protegidos por rol: productos (sólo ADMIN y VENDEDOR)
+                        .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole(Role.ADMIN.name(), Role.VENDEDOR.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole(Role.ADMIN.name(), Role.VENDEDOR.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole(Role.ADMIN.name(), Role.VENDEDOR.name())
 
                         // Protegidos por rol: categorias y usuarios
                         .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole(Role.ADMIN.name())

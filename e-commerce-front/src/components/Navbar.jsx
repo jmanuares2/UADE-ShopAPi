@@ -12,6 +12,7 @@ function Navbar() {
   const cartItems = useSelector((state) => state.cart.items);
 
   const isAdmin = user?.role === 'ADMIN';
+  const isVendedor = user?.role === 'VENDEDOR';
   const cartTotalItems = cartItems.reduce((acc, item) => acc + (item.cantidad ?? 0), 0);
 
   useEffect(() => {
@@ -77,6 +78,11 @@ function Navbar() {
                   </ul>
                 </li>
               )}
+              {isVendedor && (
+                <li className="nav-item">
+                  <Link className="nav-link px-3" to="/admin/productos" onClick={() => setIsOpen(false)}>Mis Productos</Link>
+                </li>
+              )}
               {user && (
                 <li className="nav-item">
                   <Link className="nav-link px-3" to="/carrito" onClick={() => setIsOpen(false)}>
@@ -95,7 +101,7 @@ function Navbar() {
                 </li>
               )}
             </ul>
-            
+
             <ul className="navbar-nav ms-auto align-items-center">
               {!user ? (
                 <li className="nav-item">
@@ -103,17 +109,18 @@ function Navbar() {
                 </li>
               ) : (
                 <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                  <Link 
-                    className="text-white text-decoration-none fw-semibold d-flex align-items-center px-3 py-2 rounded-pill" 
-                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', transition: 'all 0.3s ease' }} 
+                  <Link
+                    className="text-white text-decoration-none fw-semibold d-flex align-items-center px-3 py-2 rounded-pill"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', transition: 'all 0.3s ease' }}
                     to="/profile"
                     onClick={() => setIsOpen(false)}
                   >
-                    <div className="bg-white text-dark rounded-circle d-flex justify-content-center align-items-center fw-bold me-2" style={{width: '32px', height: '32px'}}>
+                    <div className="bg-white text-dark rounded-circle d-flex justify-content-center align-items-center fw-bold me-2" style={{ width: '32px', height: '32px' }}>
                       {(user.nombre || user.email).charAt(0).toUpperCase()}
                     </div>
                     {user.nombre || user.email.split('@')[0]}
                     {isAdmin && <span className="badge bg-warning text-dark ms-2 rounded-pill">ADMIN</span>}
+                    {isVendedor && <span className="badge bg-info text-dark ms-2 rounded-pill">VENDEDOR</span>}
                   </Link>
                 </div>
               )}
