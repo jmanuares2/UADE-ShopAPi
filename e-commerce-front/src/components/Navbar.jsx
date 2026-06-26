@@ -1,12 +1,36 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import { emptyCart, setCart } from '../store/cartSlice';
 
 function Navbar() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   const isAdmin = user?.role === 'ADMIN';
+  const cartTotalItems = cartItems.reduce((acc, item) => acc + (item.cantidad ?? 0), 0);
+
+  useEffect(() => {
+    const fetchCarrito = async () => {
+      if (!user) {
+        dispatch(emptyCart());
+        return;
+      }
+
+      try {
+        const response = await api.get('/carrito');
+        dispatch(setCart(response.data.items ?? []));
+      } catch {
+        dispatch(emptyCart());
+      }
+    };
+
+    fetchCarrito();
+  }, [user, dispatch]);
 
   return (
     <>
@@ -37,6 +61,9 @@ function Navbar() {
           </button>
           <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
             <ul className="navbar-nav me-auto fw-medium">
+              <li className="nav-item">
+                <Link className="nav-link px-3" to="/productos" onClick={() => setIsOpen(false)}>Productos</Link>
+              </li>
               {isAdmin && (
                 <li className="nav-item dropdown">
                   <a className="nav-link px-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,7 +79,12 @@ function Navbar() {
               )}
               {user && (
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/carrito" onClick={() => setIsOpen(false)}>Mi Carrito</Link>
+                  <Link className="nav-link px-3" to="/carrito" onClick={() => setIsOpen(false)}>
+                    Mi Carrito
+                    {cartTotalItems > 0 && (
+                      <span className="badge bg-primary ms-2 rounded-pill">{cartTotalItems}</span>
+                    )}
+                  </Link>
                 </li>
               )}
               {/* Este link aparece solamente si existe user.

@@ -14,12 +14,16 @@ function ProductCard({ product, onAddToCart }) {
 
   // useSelector lee el estado de favoritos del store
   const favoriteItems = useSelector((state) => state.favorites.items);
+  const cartItems = useSelector((state) => state.cart.items);
   const [msg, setMsg] = useState(null);
   const [msgType, setMsgType] = useState('success');
+  const [cantidad, setCantidad] = useState(1);
 
   // Revisamos si este producto ya esta en favoritos.
   // Eso sirve para pintar el boton lleno o vacio.
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
+  const itemEnCarrito = cartItems.find((item) => item.productoId === product.id);
+  const cantidadEnCarrito = itemEnCarrito?.cantidad ?? 0;
 
   const showMsg = (text, type = 'success') => {
     setMsg(text);
@@ -30,13 +34,16 @@ function ProductCard({ product, onAddToCart }) {
   const handleAddToCart = async () => {
     if (!user) return;
     try {
-      const response = await api.post('/carrito/items', { productoId: product.id, cantidad: 1 });
+      const response = await api.post('/carrito/items', { productoId: product.id, cantidad });
       const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
+      const itemActualizado = carrito.items?.find((item) => item.productoId === product.id);
+      const nuevaCantidad = itemActualizado?.cantidad ?? cantidad;
       if (onAddToCart) onAddToCart();
-      showMsg('Producto agregado al carrito');
+      showMsg(`Agregado: ${cantidad}. En carrito: ${nuevaCantidad}`);
     } catch (err) {
-      showMsg(err.response?.data?.message || 'No se pudo agregar al carrito', 'danger');
+      const data = err.response?.data;
+      showMsg((typeof data === 'string' ? data : data?.message) || 'No se pudo agregar al carrito', 'danger');
     }
   };
 
@@ -57,6 +64,11 @@ function ProductCard({ product, onAddToCart }) {
         <p className="card-text"><small className={product.stock > 0 ? 'text-success' : 'text-danger'}>
           {product.stock > 0 ? `Stock: ${product.stock}` : 'Sin stock'}
         </small></p>
+        {user && cantidadEnCarrito > 0 && (
+          <p className="card-text mb-2">
+            <small className="text-primary fw-semibold">En carrito: {cantidadEnCarrito}</small>
+          </p>
+        )}
         {msg && (
           <div className={`alert alert-${msgType} py-1 px-2 mb-2`} style={{ fontSize: '0.8rem' }}>
             {msg}
@@ -84,9 +96,21 @@ function ProductCard({ product, onAddToCart }) {
             </button>
           )}
           {user && product.stock > 0 && (
-            <button className="btn btn-primary btn-sm flex-fill" onClick={handleAddToCart}>
-              Agregar al carrito
-            </button>
+            <div className="d-flex gap-2 flex-fill">
+              <input
+                type="number"
+                className="form-control form-control-sm"
+                min="1"
+                max={product.stock}
+                value={cantidad}
+                onChange={(e) => setCantidad(Math.min(product.stock, Math.max(1, Number(e.target.value) || 1)))}
+                style={{ width: '72px' }}
+                aria-label="Cantidad"
+              />
+              <button className="btn btn-primary btn-sm flex-fill" onClick={handleAddToCart}>
+                Agregar
+              </button>
+            </div>
           )}
         </div>
       </div>
