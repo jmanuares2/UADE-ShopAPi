@@ -52,6 +52,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> manejarErroresGenerales(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno: " + ex.getMessage());
+        // Imprimimos el error detallado en el log del backend para poder debuggear
+        System.err.println("Error interno capturado: " + ex.getMessage());
+        ex.printStackTrace();
+        
+        // Devolvemos un mensaje genérico y seguro al frontend (evita filtración de datos o consultas SQL)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor. Verifique los datos ingresados o intente más tarde.");
     }
 }

@@ -94,7 +94,7 @@ function ProductForm({ product, onSaved, onCancel }) {
 
       <div className="mb-2">
         <label className="form-label">Descripcion *</label>
-        <textarea className="form-control" rows={2} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+        <textarea className="form-control" rows={2} maxLength={255} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
       </div>
 
       <div className="row">
