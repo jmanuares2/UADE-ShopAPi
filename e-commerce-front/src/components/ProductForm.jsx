@@ -20,13 +20,12 @@ function ProductForm({ product, onSaved, onCancel }) {
         const response = await api.get('/categorias');
         setCategorias(response.data);
       } catch {
-        // no bloquea si falla
+        // La carga de categorias muestra el formulario igual; el backend valida al guardar.
       }
     };
     fetchCategorias();
   }, []);
 
-  // useEffect con dependencia [product]: si cambia el producto a editar, repobla el form
   useEffect(() => {
     if (product) {
       setNombre(product.nombre || '');
@@ -38,15 +37,27 @@ function ProductForm({ product, onSaved, onCancel }) {
       setColor(product.color || '');
       setCategoriaId(product.categoriaId || '');
     } else {
-      setNombre(''); setDescripcion(''); setPrecio(''); setStock('');
-      setImagenUrl(''); setTalle(''); setColor(''); setCategoriaId('');
+      setNombre('');
+      setDescripcion('');
+      setPrecio('');
+      setStock('');
+      setImagenUrl('');
+      setTalle('');
+      setColor('');
+      setCategoriaId('');
     }
   }, [product]);
+
+  const getErrorMessage = (err) => {
+    const data = err.response?.data;
+    return (typeof data === 'string' ? data : data?.message) || 'Error al guardar el producto';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     const body = {
       nombre,
       descripcion,
@@ -57,6 +68,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       color: color || null,
       categoriaId: categoriaId ? Number(categoriaId) : null,
     };
+
     const url = product ? `/productos/${product.id}` : `/productos`;
     const request = product ? api.put(url, body) : api.post(url, body);
 
@@ -65,7 +77,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       const saved = response.data;
       if (onSaved) onSaved(saved);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al guardar el producto');
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -79,10 +91,12 @@ function ProductForm({ product, onSaved, onCancel }) {
         <label className="form-label">Nombre *</label>
         <input className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
       </div>
+
       <div className="mb-2">
-        <label className="form-label">Descripción</label>
+        <label className="form-label">Descripcion *</label>
         <textarea className="form-control" rows={2} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
       </div>
+
       <div className="row">
         <div className="col mb-2">
           <label className="form-label">Precio *</label>
@@ -93,24 +107,27 @@ function ProductForm({ product, onSaved, onCancel }) {
           <input type="number" min="0" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} required />
         </div>
       </div>
+
       <div className="mb-2">
-        <label className="form-label">URL de imagen</label>
+        <label className="form-label">URL de imagen *</label>
         <input className="form-control" value={imagenUrl} onChange={(e) => setImagenUrl(e.target.value)} placeholder="https://..." />
       </div>
+
       <div className="row">
         <div className="col mb-2">
-          <label className="form-label">Talle</label>
+          <label className="form-label">Talle *</label>
           <input className="form-control" value={talle} onChange={(e) => setTalle(e.target.value)} placeholder="S, M, L, XL..." />
         </div>
         <div className="col mb-2">
-          <label className="form-label">Color</label>
+          <label className="form-label">Color *</label>
           <input className="form-control" value={color} onChange={(e) => setColor(e.target.value)} />
         </div>
       </div>
+
       <div className="mb-3">
-        <label className="form-label">Categoría</label>
+        <label className="form-label">Categoria *</label>
         <select className="form-select" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-          <option value="">Sin categoría</option>
+          <option value="">Seleccione una categoria...</option>
           {categorias.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.nombre}</option>
           ))}
