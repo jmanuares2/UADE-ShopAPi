@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.uade.tpo.e_commerce.dto.CategoriaDto;
 import com.uade.tpo.e_commerce.service.CategoriaService;
@@ -44,8 +45,10 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoriaById(@PathVariable Long id) {
-        categoriaService.deleteCategoriaById(id);
+    public ResponseEntity<Void> deleteCategoriaById(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long reemplazoId) {
+        categoriaService.deleteCategoriaById(id, reemplazoId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
