@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from '../services/api';
+import api from '../services/api';
 import ProductCard from './ProductCard';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { fetchFavorites } from '../store/favoritesSlice';
 
 
@@ -16,11 +16,8 @@ function ProductList() {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch(`${API_URL}/categorias`);
-        if (response.ok) {
-          const data = await response.json();
-          setCategorias(data);
-        }
+        const response = await api.get('/categorias');
+        setCategorias(response.data);
       } catch {
         // no bloquea si falla
       }
@@ -34,14 +31,12 @@ function ProductList() {
       setError(null);
       try {
         const url = categoriaSeleccionada
-          ? `${API_URL}/productos/categoria/${categoriaSeleccionada}`
-          : `${API_URL}/productos`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Error al cargar los productos');
-        const data = await response.json();
-        setProducts(data);
+          ? `/productos/categoria/${categoriaSeleccionada}`
+          : `/productos`;
+        const response = await api.get(url);
+        setProducts(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || 'Error al cargar los productos');
       } finally {
         setLoading(false);
       }

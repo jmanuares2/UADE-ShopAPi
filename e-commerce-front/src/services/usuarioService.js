@@ -1,52 +1,48 @@
-import { API_URL, authHeaders } from './api';
+import api from './api';
 
 export const usuarioService = {
   getAllUsuarios: async () => {
-    const response = await fetch(`${API_URL}/usuarios`, {
-      headers: authHeaders(),
-    });
-    if (!response.ok) throw new Error('Error al obtener usuarios');
-    return response.json();
+    try {
+      const response = await api.get('/usuarios');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al obtener usuarios');
+    }
   },
 
   updateUsuario: async (id, data) => {
-    const response = await fetch(`${API_URL}/usuarios/${id}`, {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Error al actualizar usuario');
+    try {
+      const response = await api.put(`/usuarios/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al actualizar usuario');
     }
-    return response.json();
   },
 
   deleteUsuario: async (id) => {
-    const response = await fetch(`${API_URL}/usuarios/${id}`, {
-      method: 'DELETE',
-      headers: authHeaders(),
-    });
-    if (!response.ok) throw new Error('Error al deshabilitar usuario');
+    try {
+      const response = await api.delete(`/usuarios/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al deshabilitar usuario');
+    }
   },
 
   restoreUsuario: async (id) => {
-    const response = await fetch(`${API_URL}/usuarios/${id}/restaurar`, {
-      method: 'PATCH',
-      headers: authHeaders(),
-    });
-    if (!response.ok) throw new Error('Error al restaurar usuario');
-    return response.json();
+    try {
+      const response = await api.patch(`/usuarios/${id}/restaurar`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al restaurar usuario');
+    }
   },
 
   hardDeleteUsuario: async (id) => {
-    const response = await fetch(`${API_URL}/usuarios/${id}/definitivo`, {
-      method: 'DELETE',
-      headers: authHeaders(),
-    });
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text || 'Error al eliminar definitivamente el usuario. Asegúrese de que no tenga productos publicados.');
+    try {
+      const response = await api.delete(`/usuarios/${id}/definitivo`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al eliminar definitivamente el usuario. Asegúrese de que no tenga productos publicados.');
     }
   },
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { API_URL, authHeaders } from '../services/api';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import { setCart } from '../store/cartSlice';
@@ -24,12 +24,10 @@ function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`${API_URL}/productos/${id}`);
-        if (!response.ok) throw new Error('Producto no encontrado');
-        const data = await response.json();
-        setProduct(data);
+        const response = await api.get(`/productos/${id}`);
+        setProduct(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || 'Producto no encontrado');
       } finally {
         setLoading(false);
       }
@@ -39,17 +37,12 @@ function ProductDetail() {
 
   const handleAddToCart = async () => {
     try {
-      const response = await fetch(`${API_URL}/carrito/items`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ productoId: product.id, cantidad: 1 }),
-      });
-      if (!response.ok) throw new Error('No se pudo agregar al carrito');
-      const carrito = await response.json();
+      const response = await api.post('/carrito/items', { productoId: product.id, cantidad: 1 });
+      const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
       alert('Producto agregado al carrito');
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.message || 'No se pudo agregar al carrito');
     }
   };
 

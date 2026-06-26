@@ -1,43 +1,43 @@
-import { API_URL, authHeaders } from './api';
+import api from './api';
 
 export const categoriaService = {
   getAllCategorias: async () => {
-    const response = await fetch(`${API_URL}/categorias`);
-    if (!response.ok) throw new Error('Error al obtener categorías');
-    return response.json();
+    try {
+      const response = await api.get('/categorias');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al obtener categorías');
+    }
   },
 
   createCategoria: async (data) => {
-    const response = await fetch(`${API_URL}/categorias`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Error al crear categoría');
+    try {
+      const response = await api.post('/categorias', data);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al crear categoría');
     }
-    return response.json();
   },
 
   updateCategoria: async (id, data) => {
-    const response = await fetch(`${API_URL}/categorias/${id}`, {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Error al actualizar categoría');
+    try {
+      const response = await api.put(`/categorias/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al actualizar categoría');
     }
-    return response.json();
   },
 
-  deleteCategoria: async (id) => {
-    const response = await fetch(`${API_URL}/categorias/${id}`, {
-      method: 'DELETE',
-      headers: authHeaders(),
-    });
-    if (!response.ok) throw new Error('Error al eliminar categoría');
-  },
+  deleteCategoria: async (id, reemplazoId = null) => {
+    try {
+      let url = `/categorias/${id}`;
+      if (reemplazoId) {
+        url += `?reemplazoId=${reemplazoId}`;
+      }
+      const response = await api.delete(url);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error al eliminar categoría');
+    }
+  }
 };

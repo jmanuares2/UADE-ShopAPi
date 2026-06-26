@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { API_URL } from '../services/api';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
@@ -16,18 +16,18 @@ function Login() {
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!response.ok) throw new Error('Credenciales inválidas');
-      const data = await response.json();
+      const response = await api.post('/auth/login', { email, password });
+      const data = response.data;
       // AuthResponse: { userId, token, role }
-      login({ userId: data.userId, email, role: data.role }, data.token);
+      login({
+          userId: data.userId,
+          email: email,
+          nombre: data.nombre,
+          role: data.role
+        });
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Credenciales inválidas');
     } finally {
       setLoading(false);
     }

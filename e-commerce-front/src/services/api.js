@@ -1,11 +1,21 @@
+import axios from 'axios';
+
 export const API_URL = 'http://localhost:8080/api';
 
-export const getToken = () => localStorage.getItem('token');
-
-export const authHeaders = () => {
-  const token = getToken();
-  return {
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true, // Crucial para enviar y recibir cookies (JWT y XSRF)
+  withXSRFToken: true,   // NATIVO de Axios >=1.6: Habilita el XSRF token en peticiones cross-origin
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+  headers: {
     'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+  },
+});
+
+// Función mock deprecated por compatibilidad si es que queda algo usándolo
+export const authHeaders = () => {
+  return {};
 };
+
+export default api;

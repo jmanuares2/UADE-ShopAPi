@@ -25,12 +25,19 @@ import com.uade.tpo.e_commerce.security.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
+import com.uade.tpo.e_commerce.security.CsrfCookieFilter;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final CsrfCookieFilter csrfCookieFilter;
     private final UsuarioRepository usuarioRepository;
 
     @Bean
@@ -63,9 +70,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName(null);
+
         http
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(requestHandler)
+                        .ignoringRequestMatchers("/api/auth/**")
+                )
                 // Definimos qué endpoints son públicos y cuáles requieren auth/rol.
                 .authorizeHttpRequests(auth -> auth
                         // Publicos
@@ -89,6 +104,7 @@ public class SecurityConfig {
 
                         // Fallback
                         .anyRequest().authenticated())
+                .addFilterAfter(csrfCookieFilter, org.springframework.security.web.authentication.www.BasicAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         // El filtro JWT corre antes del filtro de usuario/password de Spring.
 

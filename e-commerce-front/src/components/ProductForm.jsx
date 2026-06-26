@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_URL, authHeaders } from '../services/api';
+import api from '../services/api';
 
 function ProductForm({ product, onSaved, onCancel }) {
   const [nombre, setNombre] = useState('');
@@ -17,8 +17,8 @@ function ProductForm({ product, onSaved, onCancel }) {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch(`${API_URL}/categorias`);
-        if (response.ok) setCategorias(await response.json());
+        const response = await api.get('/categorias');
+        setCategorias(response.data);
       } catch {
         // no bloquea si falla
       }
@@ -57,20 +57,15 @@ function ProductForm({ product, onSaved, onCancel }) {
       color: color || null,
       categoriaId: categoriaId ? Number(categoriaId) : null,
     };
-    const url = product ? `${API_URL}/productos/${product.id}` : `${API_URL}/productos`;
-    const method = product ? 'PUT' : 'POST';
+    const url = product ? `/productos/${product.id}` : `/productos`;
+    const request = product ? api.put(url, body) : api.post(url, body);
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: authHeaders(),
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) throw new Error('Error al guardar el producto');
-      const saved = await response.json();
+      const response = await request;
+      const saved = response.data;
       if (onSaved) onSaved(saved);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Error al guardar el producto');
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_URL, authHeaders } from '../services/api';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { setCart, emptyCart } from '../store/cartSlice';
@@ -25,12 +25,11 @@ function Carrito() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/carrito`, { headers: authHeaders() });
-      if (!response.ok) throw new Error('Error al cargar el carrito');
-      const carrito = await response.json();
+      const response = await api.get('/carrito');
+      const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Error al cargar el carrito');
     } finally {
       setLoading(false);
     }
@@ -39,46 +38,34 @@ function Carrito() {
   const handleRemoveItem = async (itemId) => {
     setErrorMsg(null);
     try {
-      const response = await fetch(`${API_URL}/carrito/items/${itemId}`, {
-        method: 'DELETE',
-        headers: authHeaders(),
-      });
-      if (!response.ok) throw new Error('Error al eliminar el item');
-      const carrito = await response.json();
+      const response = await api.delete(`/carrito/items/${itemId}`);
+      const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
     } catch (err) {
-      setErrorMsg(err.message);
+      setErrorMsg(err.response?.data?.message || 'Error al eliminar el item');
     }
   };
 
   const handleClear = async () => {
     setErrorMsg(null);
     try {
-      const response = await fetch(`${API_URL}/carrito/clear`, {
-        method: 'DELETE',
-        headers: authHeaders(),
-      });
-      if (!response.ok) throw new Error('Error al vaciar el carrito');
-      const carrito = await response.json();
+      const response = await api.delete('/carrito/clear');
+      const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
     } catch (err) {
-      setErrorMsg(err.message);
+      setErrorMsg(err.response?.data?.message || 'Error al vaciar el carrito');
     }
   };
 
   const handleCheckout = async () => {
     setErrorMsg(null);
     try {
-      const response = await fetch(`${API_URL}/carrito/checkout`, {
-        method: 'POST',
-        headers: authHeaders(),
-      });
-      if (!response.ok) throw new Error('Error en el checkout');
-      const msg = await response.text();
-      setCheckoutMsg(msg);
+      const response = await api.post('/carrito/checkout');
+      const msg = response.data;
+      setCheckoutMsg(msg || 'Compra confirmada');
       dispatch(emptyCart());
     } catch (err) {
-      setErrorMsg(err.message);
+      setErrorMsg(err.response?.data?.message || err.response?.data || 'Error en el checkout');
     }
   };
 

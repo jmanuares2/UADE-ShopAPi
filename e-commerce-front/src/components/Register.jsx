@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { API_URL } from '../services/api';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 function Register() {
@@ -25,21 +25,13 @@ function Register() {
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      if (!response.ok) {
-        const msg = await response.text();
-        throw new Error(msg || 'Error al registrarse');
-      }
-      const data = await response.json();
+      const response = await api.post('/auth/register', form);
+      const data = response.data;
       // AuthResponse: { userId, token, role }
-      login({ userId: data.userId, email: form.email, nombre: form.nombre, role: data.role }, data.token);
+      login({ userId: data.userId, email: form.email, nombre: form.nombre, role: data.role });
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.response?.data || 'Error al registrarse');
     } finally {
       setLoading(false);
     }

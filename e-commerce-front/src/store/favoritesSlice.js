@@ -1,45 +1,39 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../services/api';
 
 export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
-  async () => {
-    const response = await fetch('http://localhost:8080/api/favoritos', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Error al obtener favoritos');
-    return await response.json();
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/favoritos');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error fetching favorites');
+    }
   }
 );
 
 export const addFavorite = createAsyncThunk(
   'favorites/addFavorite',
-  async (producto) => {
-    const response = await fetch(`http://localhost:8080/api/favoritos/${producto.id}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Error al agregar favorito');
-    return producto; 
+  async (producto, { rejectWithValue }) => {
+    try {
+      await api.post(`/favoritos/${producto.id}`);
+      return producto;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error adding favorite');
+    }
   }
 );
 
 export const removeFavorite = createAsyncThunk(
   'favorites/removeFavorite',
-  async (productoId) => {
-    const response = await fetch(`http://localhost:8080/api/favoritos/${productoId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Error al eliminar favorito');
-    return productoId;
+  async (productoId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/favoritos/${productoId}`);
+      return productoId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error removing favorite');
+    }
   }
 );
 

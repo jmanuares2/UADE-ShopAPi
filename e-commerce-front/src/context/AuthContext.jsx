@@ -1,5 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 
+import api from '../services/api';
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -8,16 +10,23 @@ export function AuthProvider({ children }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const login = (userData, token) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const login = (userData) => {
+    // El token ahora viene en una cookie HttpOnly. 
+    // Solo guardamos en LocalStorage la información no sensible del usuario para la UI.
     setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      // Le pedimos al backend que borre la cookie
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Error durante el logout:', err);
+    }
+    
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   return (

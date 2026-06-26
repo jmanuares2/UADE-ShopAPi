@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_URL, authHeaders } from '../services/api';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ProductForm from './ProductForm';
@@ -23,11 +23,10 @@ function AdminProductList() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/productos`);
-      if (!response.ok) throw new Error('Error al cargar productos');
-      setProducts(await response.json());
+      const response = await api.get('/productos');
+      setProducts(response.data);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Error al cargar productos');
     } finally {
       setLoading(false);
     }
@@ -42,14 +41,10 @@ function AdminProductList() {
   const handleDelete = async (id) => {
     setDeleteError(null);
     try {
-      const response = await fetch(`${API_URL}/productos/${id}`, {
-        method: 'DELETE',
-        headers: authHeaders(),
-      });
-      if (!response.ok) throw new Error('Error al eliminar');
+      await api.delete(`/productos/${id}`);
       setProducts(products.filter((p) => p.id !== id));
     } catch (err) {
-      setDeleteError(err.message);
+      setDeleteError(err.response?.data?.message || 'Error al eliminar');
     }
   };
 

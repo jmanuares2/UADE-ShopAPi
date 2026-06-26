@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import { setCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
-import { API_URL, authHeaders } from '../services/api';
+import api from '../services/api';
 
 function ProductCard({ product, onAddToCart }) {
   const { user } = useAuth();
@@ -30,18 +30,13 @@ function ProductCard({ product, onAddToCart }) {
   const handleAddToCart = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`${API_URL}/carrito/items`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ productoId: product.id, cantidad: 1 }),
-      });
-      if (!response.ok) throw new Error('No se pudo agregar al carrito');
-      const carrito = await response.json();
+      const response = await api.post('/carrito/items', { productoId: product.id, cantidad: 1 });
+      const carrito = response.data;
       dispatch(setCart(carrito.items ?? []));
       if (onAddToCart) onAddToCart();
       showMsg('Producto agregado al carrito');
     } catch (err) {
-      showMsg(err.message, 'danger');
+      showMsg(err.response?.data?.message || 'No se pudo agregar al carrito', 'danger');
     }
   };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { categoriaService } from '../../services/categoriaService';
-import { API_URL, authHeaders } from '../../services/api';
+import api from '../../services/api';
 import ConfirmModal from '../common/ConfirmModal';
 import ReplaceCategoryModal from '../common/ReplaceCategoryModal';
 
@@ -73,9 +73,8 @@ function AdminCategorias() {
     setCatToDelete(cat);
     // Fetch count of products
     try {
-      const res = await fetch(`${API_URL}/productos/categoria/${cat.id}`);
-      if (!res.ok) throw new Error('Error al verificar productos');
-      const data = await res.json();
+      const res = await api.get(`/productos/categoria/${cat.id}`);
+      const data = res.data;
       if (data.length > 0) {
         setProductosAfectados(data);
         setShowReplace(true);
@@ -83,7 +82,7 @@ function AdminCategorias() {
         setShowConfirm(true);
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Error al verificar productos');
     }
   };
 
@@ -121,17 +120,12 @@ function AdminCategorias() {
           color: prod.color,
           categoriaId: nuevaCategoriaId
         };
-        const res = await fetch(`${API_URL}/productos/${prod.id}`, {
-          method: 'PUT',
-          headers: authHeaders(),
-          body: JSON.stringify(dto)
-        });
-        if (!res.ok) throw new Error(`Error al reasignar producto ${prod.id}`);
+        await api.put(`/productos/${prod.id}`, dto);
       }
       // 2. Eliminar la categoría
       await executeDelete(catToDelete.id);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
       setIsDeleting(false);
       setShowReplace(false);
     }
