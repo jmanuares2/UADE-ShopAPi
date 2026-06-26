@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { emptyCart, setCart } from '../store/cartSlice';
+import { clearFavorites } from '../store/favoritesSlice';
 
 function Navbar() {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ function Navbar() {
     const fetchCarrito = async () => {
       if (!user) {
         dispatch(emptyCart());
+        dispatch(clearFavorites());
         return;
       }
 
