@@ -1,0 +1,12 @@
+{
+  "id": "newman-env-local",
+  "name": "Local",
+  "values": [
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ]
+}
