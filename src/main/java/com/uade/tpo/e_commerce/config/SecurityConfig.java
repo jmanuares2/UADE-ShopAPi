@@ -103,8 +103,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/usuarios/**").hasRole(Role.ADMIN.name())
 
-                        // Protegidos: carrito
+                        // Protegidos: carrito y perfil
                         .requestMatchers("/api/carrito/**").authenticated()
+                        .requestMatchers("/api/perfil/**").authenticated()
 
                         // Fallback
                         .anyRequest().authenticated())
