@@ -5,9 +5,10 @@ import StatusBadge from '../common/StatusBadge';
 
 function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
+  const [busqueda, setBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Modals state
   const [userToProcess, setUserToProcess] = useState(null);
   const [actionType, setActionType] = useState(''); // 'soft-delete' | 'hard-delete' | 'restore'
@@ -92,6 +93,16 @@ function AdminUsuarios() {
     return new Date(fechaArray).toLocaleString();
   };
 
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const q = busqueda.toLowerCase();
+    return (
+      u.email?.toLowerCase().includes(q) ||
+      u.nombre?.toLowerCase().includes(q) ||
+      u.apellido?.toLowerCase().includes(q) ||
+      u.nombreUsuario?.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Panel Admin — Usuarios</h2>
@@ -102,6 +113,17 @@ function AdminUsuarios() {
           <button type="button" className="btn-close" onClick={() => setError(null)}></button>
         </div>
       )}
+
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Buscar por nombre, apellido, email o usuario..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          style={{ maxWidth: '400px' }}
+        />
+      </div>
 
       {loading ? (
         <div className="text-center py-4">
@@ -121,7 +143,7 @@ function AdminUsuarios() {
               </tr>
             </thead>
             <tbody>
-              {usuarios.map(u => (
+              {usuariosFiltrados.map(u => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>
@@ -175,8 +197,10 @@ function AdminUsuarios() {
                   </td>
                 </tr>
               ))}
-              {usuarios.length === 0 && (
-                <tr><td colSpan="6" className="text-center text-muted py-3">No hay usuarios registrados.</td></tr>
+              {usuariosFiltrados.length === 0 && (
+                <tr><td colSpan="6" className="text-center text-muted py-3">
+                  {busqueda ? 'No se encontraron usuarios con ese criterio.' : 'No hay usuarios registrados.'}
+                </td></tr>
               )}
             </tbody>
           </table>
