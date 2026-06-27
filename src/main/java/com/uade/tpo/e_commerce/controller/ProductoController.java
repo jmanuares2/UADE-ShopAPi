@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -40,6 +41,23 @@ public class ProductoController {
     @GetMapping("/categoria/{categoriaId}")
     public ResponseEntity<List<ProductoResponseDto>> getProductosByCategoria(@PathVariable Long categoriaId) {
         return new ResponseEntity<>(productoService.getProductosByCategoria(categoriaId), HttpStatus.OK);
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProductoResponseDto>> buscarProductos(@RequestParam String q) {
+        return new ResponseEntity<>(productoService.buscarPorNombre(q), HttpStatus.OK);
+    }
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<ProductoResponseDto>> filtrarPorPrecio(
+            @RequestParam Double precioMin,
+            @RequestParam Double precioMax) {
+        return new ResponseEntity<>(productoService.filtrarPorPrecio(precioMin, precioMax), HttpStatus.OK);
+    }
+
+    @GetMapping("/mis-productos")
+    public ResponseEntity<List<ProductoResponseDto>> getMisProductos() {
+        return new ResponseEntity<>(productoService.getMisProductos(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

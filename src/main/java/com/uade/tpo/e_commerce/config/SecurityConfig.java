@@ -88,6 +88,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Publicos
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/mis-productos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
 
@@ -102,8 +103,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/usuarios/**").hasRole(Role.ADMIN.name())
 
-                        // Protegidos: carrito
+                        // Protegidos: carrito y perfil
                         .requestMatchers("/api/carrito/**").authenticated()
+                        .requestMatchers("/api/perfil/**").authenticated()
 
                         // Fallback
                         .anyRequest().authenticated())

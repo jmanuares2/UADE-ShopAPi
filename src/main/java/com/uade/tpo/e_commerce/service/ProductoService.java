@@ -111,6 +111,25 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductoResponseDto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCaseOrderByNombreAsc(nombre).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductoResponseDto> filtrarPorPrecio(Double precioMin, Double precioMax) {
+        return productoRepository.findByPrecioBetween(precioMin, precioMax).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductoResponseDto> getMisProductos() {
+        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+        return productoRepository.findByCreadorIdOrderByNombreAsc(usuarioAutenticado.getId()).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     private void validarProducto(ProductoRequestDto dto) {
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new RuntimeException("El nombre del producto es obligatorio");
