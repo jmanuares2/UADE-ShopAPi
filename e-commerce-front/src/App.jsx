@@ -15,6 +15,7 @@ import Carrito from './components/Carrito';
 import Favorite from './components/Favorite';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
+import CheckoutExito from './components/CheckoutExito';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/checkout/exito" element={<CheckoutExito />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
