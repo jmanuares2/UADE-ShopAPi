@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.e_commerce.dto.CarritoResponseDto;
@@ -34,6 +36,13 @@ public class CarritoController {
     public ResponseEntity<CarritoResponseDto> agregarItem(Principal principal, @RequestBody CartItemRequestDto dto) {
         String email = principal.getName();
         return new ResponseEntity<>(carritoService.addItemToCarrito(email, dto), HttpStatus.OK);
+    }
+
+    @PutMapping("/items/{itemId}")
+    public ResponseEntity<CarritoResponseDto> actualizarCantidad(Principal principal, @PathVariable Long itemId,
+            @RequestParam int cantidad) {
+        String email = principal.getName();
+        return new ResponseEntity<>(carritoService.updateItemCantidad(email, itemId, cantidad), HttpStatus.OK);
     }
 
     @DeleteMapping("/items/{itemId}")
