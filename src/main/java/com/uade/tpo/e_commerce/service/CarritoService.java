@@ -81,6 +81,24 @@ public class CarritoService {
         return mapToDto(carritoRepository.save(carrito));
     }
 
+    public CarritoResponseDto updateItemCantidad(String email, Long itemId, int nuevaCantidad) {
+        if (nuevaCantidad <= 0) {
+            return removeItemFromCarrito(email, itemId);
+        }
+        Carrito carrito = getOrCreateCarrito(email);
+        carrito.getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .ifPresent(item -> {
+                    if (item.getProducto().getStock() < nuevaCantidad) {
+                        throw new OutOfStockException("Stock insuficiente para: " + item.getProducto().getNombre());
+                    }
+                    item.setCantidad(nuevaCantidad);
+                });
+        recalcularTotal(carrito);
+        return mapToDto(carritoRepository.save(carrito));
+    }
+
     public CarritoResponseDto removeItemFromCarrito(String email, Long itemId) {
         Carrito carrito = getOrCreateCarrito(email);
         carrito.getItems().removeIf(item -> item.getId().equals(itemId));

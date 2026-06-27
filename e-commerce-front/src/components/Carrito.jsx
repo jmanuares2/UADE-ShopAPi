@@ -15,6 +15,7 @@ function Carrito() {
   const [error, setError] = useState(null);
   const [checkoutMsg, setCheckoutMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [updatingItem, setUpdatingItem] = useState(null);
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -26,8 +27,7 @@ function Carrito() {
     setError(null);
     try {
       const response = await api.get('/carrito');
-      const carrito = response.data;
-      dispatch(setCart(carrito.items ?? []));
+      dispatch(setCart(response.data.items ?? []));
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar el carrito');
     } finally {
@@ -35,12 +35,25 @@ function Carrito() {
     }
   };
 
+  const handleUpdateCantidad = async (itemId, nuevaCantidad) => {
+    if (nuevaCantidad < 1) return;
+    setUpdatingItem(itemId);
+    setErrorMsg(null);
+    try {
+      const response = await api.put(`/carrito/items/${itemId}`, null, { params: { cantidad: nuevaCantidad } });
+      dispatch(setCart(response.data.items ?? []));
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || 'Error al actualizar la cantidad');
+    } finally {
+      setUpdatingItem(null);
+    }
+  };
+
   const handleRemoveItem = async (itemId) => {
     setErrorMsg(null);
     try {
       const response = await api.delete(`/carrito/items/${itemId}`);
-      const carrito = response.data;
-      dispatch(setCart(carrito.items ?? []));
+      dispatch(setCart(response.data.items ?? []));
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Error al eliminar el item');
     }
@@ -50,8 +63,7 @@ function Carrito() {
     setErrorMsg(null);
     try {
       const response = await api.delete('/carrito/clear');
-      const carrito = response.data;
-      dispatch(setCart(carrito.items ?? []));
+      dispatch(setCart(response.data.items ?? []));
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Error al vaciar el carrito');
     }
@@ -60,10 +72,9 @@ function Carrito() {
   const handleCheckout = async () => {
     setErrorMsg(null);
     try {
-      const response = await api.post('/carrito/checkout');
-      const msg = response.data;
-      setCheckoutMsg(msg || 'Compra confirmada');
+      await api.post('/carrito/checkout');
       dispatch(emptyCart());
+      navigate('/checkout/exito');
     } catch (err) {
       setErrorMsg(err.response?.data?.message || err.response?.data || 'Error en el checkout');
     }
@@ -119,7 +130,27 @@ function Carrito() {
                   <tr key={item.id}>
                     <td>{item.productoNombre || item.nombreProducto || item.producto?.nombre || '—'}</td>
                     <td>${item.precioUnitario?.toFixed(2)}</td>
-                    <td>{item.cantidad}</td>
+                    <td>
+                      <div className="d-flex align-items-center gap-2">
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          style={{ width: '30px', padding: '0' }}
+                          onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}
+                          disabled={updatingItem === item.id || item.cantidad <= 1}
+                        >−</button>
+                        <span className="fw-semibold" style={{ minWidth: '24px', textAlign: 'center' }}>
+                          {updatingItem === item.id
+                            ? <span className="spinner-border spinner-border-sm" role="status"></span>
+                            : item.cantidad}
+                        </span>
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          style={{ width: '30px', padding: '0' }}
+                          onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}
+                          disabled={updatingItem === item.id}
+                        >+</button>
+                      </div>
+                    </td>
                     <td>${(item.precioUnitario * item.cantidad)?.toFixed(2)}</td>
                     <td>
                       <button
