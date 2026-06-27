@@ -14,6 +14,7 @@ import AdminUsuarios from './components/admin/AdminUsuarios';
 import Carrito from './components/Carrito';
 import Favorite from './components/Favorite';
 import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
