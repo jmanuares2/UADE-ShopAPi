@@ -19,6 +19,7 @@ import com.uade.tpo.e_commerce.repository.CarritoRepository;
 import com.uade.tpo.e_commerce.repository.ProductoRepository;
 import com.uade.tpo.e_commerce.repository.UsuarioRepository;
 
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,6 +34,9 @@ public class CarritoService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private VentaService ventaService;
 
     public CarritoResponseDto getCarritoByUsername(String email) {
         Carrito carrito = getOrCreateCarrito(email);
@@ -131,6 +135,10 @@ public class CarritoService {
             p.setStock(p.getStock() - item.getCantidad());
             productoRepository.save(p);
         }
+
+        Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        ventaService.guardarVentaDesdeCarrito(usuario, carrito);
 
         carrito.getItems().clear();
         recalcularTotal(carrito);
