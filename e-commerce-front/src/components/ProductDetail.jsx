@@ -91,7 +91,7 @@ function ProductDetail() {
           <p className="text-muted">{product.descripcion}</p>
           {product.talle && <p><strong>Talle:</strong> {product.talle}</p>}
           {product.color && <p><strong>Color:</strong> {product.color}</p>}
-          <h3 className="text-primary">${product.precio?.toFixed(2)}</h3>
+          <h3 className="text-primary">${Math.round(Number(product.precio || 0)).toLocaleString('es-AR')}</h3>
           <p className={product.stock > 0 ? 'text-success' : 'text-danger'}>
             {product.stock > 0 ? `Stock disponible: ${product.stock}` : 'Sin stock'}
           </p>

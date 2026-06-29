@@ -75,13 +75,13 @@ const MisCompras = () => {
                 <div>
                   <h6 className="mb-0">{item.nombreProducto}</h6>
                   <small className="text-muted">
-                    Cantidad: {item.cantidad} - Precio: ${item.precioUnitario.toFixed(2)} - Fecha: {new Date(item.fechaVenta).toLocaleString('es-AR')}
+                    Cantidad: {item.cantidad} - Precio: ${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')} - Fecha: {new Date(item.fechaVenta).toLocaleString('es-AR')}
                   </small>
                 </div>
               </div>
               <div className="d-flex align-items-center">
                 <span className="fw-bold me-3">
-                  ${item.subtotal.toFixed(2)}
+                  ${Math.round(Number(item.subtotal || 0)).toLocaleString('es-AR')}
                 </span>
                 <button
                   className="btn btn-outline-danger btn-sm"

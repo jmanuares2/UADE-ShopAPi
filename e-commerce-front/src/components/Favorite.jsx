@@ -32,7 +32,7 @@ function Favorite() {
         <div className="row">
           {/* map recorre el array de favoritos y crea una tarjeta por producto. */}
           {favoriteItems.map((product) => (
-            <div className="col-md-4 mb-4" key={product.id}>
+            <div className="col-6 col-md-3 mb-4" key={product.id}>
               <ProductCard product={product} />
             </div>
           ))}

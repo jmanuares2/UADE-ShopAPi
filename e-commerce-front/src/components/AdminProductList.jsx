@@ -117,7 +117,7 @@ function AdminProductList() {
                   <td>{p.id}</td>
                   <td>{p.nombre}</td>
                   <td>{p.categoriaNombre || '—'}</td>
-                  <td>${p.precio?.toFixed(2)}</td>
+                  <td>${Math.round(Number(p.precio || 0)).toLocaleString('es-AR')}</td>
                   <td>
                     <span className={p.stock > 0 ? 'text-success' : 'text-danger'}>
                       {p.stock}

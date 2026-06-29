@@ -1,116 +1,139 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
-import { setCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
 
 function ProductCard({ product }) {
+  const navigate = useNavigate();
   const { user } = useAuth();
-
-  // useDispatch permite ejecutar acciones sobre el store de Redux
   const dispatch = useDispatch();
-
-  // useSelector lee el estado de favoritos del store
   const favoriteItems = useSelector((state) => state.favorites.items);
-  const cartItems = useSelector((state) => state.cart.items);
-  const [msg, setMsg] = useState(null);
-  const [msgType, setMsgType] = useState('success');
-  const [cantidad, setCantidad] = useState(1);
 
-  // Revisamos si este producto ya esta en favoritos.
-  // Eso sirve para pintar el boton lleno o vacio.
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
-  const itemEnCarrito = cartItems.find((item) => item.productoId === product.id);
-  const cantidadEnCarrito = itemEnCarrito?.cantidad ?? 0;
 
-  const showMsg = (text, type = 'success') => {
-    setMsg(text);
-    setMsgType(type);
-    setTimeout(() => setMsg(null), 3000);
-  };
-
-  const handleAddToCart = async () => {
-    if (!user) return;
-    try {
-      const response = await api.post('/carrito/items', { productoId: product.id, cantidad });
-      const carrito = response.data;
-      dispatch(setCart(carrito.items ?? []));
-      const itemActualizado = carrito.items?.find((item) => item.productoId === product.id);
-      const nuevaCantidad = itemActualizado?.cantidad ?? cantidad;
-      showMsg(`Agregado: ${cantidad}. En carrito: ${nuevaCantidad}`);
-    } catch (err) {
-      const data = err.response?.data;
-      showMsg((typeof data === 'string' ? data : data?.message) || 'No se pudo agregar al carrito', 'danger');
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation(); // Evita navegar al producto cuando se toca el favorito
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    if (isFavorite) {
+      dispatch(removeFavorite(product.id));
+    } else {
+      dispatch(addFavorite(product));
     }
   };
 
+  const handleCardClick = () => {
+    navigate(`/productos/${product.id}`);
+  };
+
+  const formatPrecio = (val) => {
+    if (val == null) return '0';
+    return Math.round(Number(val)).toLocaleString('es-AR');
+  };
+
   return (
-    <div className="card h-100 shadow-sm">
-      {product.imagenUrl && (
-        <img src={product.imagenUrl} className="card-img-top" alt={product.nombre} style={{ height: '200px', objectFit: 'cover' }} />
-      )}
-      <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{product.nombre}</h5>
-        {product.categoriaNombre && (
-          <span className="badge bg-secondary mb-2" style={{ width: 'fit-content' }}>{product.categoriaNombre}</span>
+    <div
+      onClick={handleCardClick}
+      style={{
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        background: 'transparent',
+        transition: 'transform 0.2s ease',
+      }}
+      className="product-card-container"
+    >
+      {/* Contenedor de imagen: 2/3 */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '1 / 1', // Proporción perfecta para que ocupe aprox 2/3 de la tarjeta
+          background: '#f5f5f5',
+          borderRadius: '6px',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '12px',
+        }}
+      >
+        {product.imagenUrl ? (
+          <img
+            src={product.imagenUrl}
+            alt={product.nombre}
+            style={{
+              width: '92%',
+              height: '92%',
+              objectFit: 'contain',
+              transition: 'transform 0.3s ease',
+            }}
+          />
+        ) : (
+          <span style={{ color: '#aaa', fontSize: '13px' }}>Sin imagen</span>
         )}
-        <p className="card-text text-muted" style={{ fontSize: '0.9rem' }}>{product.descripcion}</p>
-        {product.talle && <p className="card-text mb-1"><small>Talle: {product.talle}</small></p>}
-        {product.color && <p className="card-text mb-1"><small>Color: {product.color}</small></p>}
-        <p className="card-text fw-bold fs-5 mt-auto">${product.precio?.toFixed(2)}</p>
-        <p className="card-text"><small className={product.stock > 0 ? 'text-success' : 'text-danger'}>
-          {product.stock > 0 ? `Stock: ${product.stock}` : 'Sin stock'}
-        </small></p>
-        {user && cantidadEnCarrito > 0 && (
-          <p className="card-text mb-2">
-            <small className="text-primary fw-semibold">En carrito: {cantidadEnCarrito}</small>
-          </p>
-        )}
-        {msg && (
-          <div className={`alert alert-${msgType} py-1 px-2 mb-2`} style={{ fontSize: '0.8rem' }}>
-            {msg}
-          </div>
-        )}
-        <div className="d-flex gap-2 mt-2">
-          <Link to={`/productos/${product.id}`} className="btn btn-outline-primary btn-sm flex-fill">
-            Ver detalle
-          </Link>
-          {/* El corazon solo aparece si el usuario esta logueado.
-              Al tocarlo llamamos a addToFavorite(product). */}
-          {user && (
-            <button
-              className={isFavorite ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'}
-              onClick={() => {
-                if (isFavorite) {
-                  dispatch(removeFavorite(product.id));
-                } else {
-                  dispatch(addFavorite(product));
-                }
-              }}
-              title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-            >
-              {isFavorite ? '♥' : '♡'}
-            </button>
-          )}
-          {user && product.stock > 0 && (
-            <div className="d-flex gap-2 flex-fill">
-              <input
-                type="number"
-                className="form-control form-control-sm"
-                min="1"
-                max={product.stock}
-                value={cantidad}
-                onChange={(e) => setCantidad(Math.min(product.stock, Math.max(1, Number(e.target.value) || 1)))}
-                style={{ width: '72px' }}
-                aria-label="Cantidad"
-              />
-              <button className="btn btn-primary btn-sm flex-fill" onClick={handleAddToCart}>
-                Agregar
-              </button>
-            </div>
-          )}
+
+        {/* Corazón de favorito arriba a la derecha */}
+        <button
+          onClick={handleFavoriteClick}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: 'transparent',
+            border: 'none',
+            padding: '6px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: isFavorite ? '#e53935' : '#111',
+            transition: 'transform 0.2s ease',
+            zIndex: 2,
+          }}
+          title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill={isFavorite ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+      </div>
+
+      {/* Contenedor de datos: 1/3 */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '0 4px' }}>
+        {/* Precio sin decimales */}
+        <div style={{ color: '#e53935', fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>
+          $ {formatPrecio(product.precio)}
+        </div>
+
+        {/* Nombre del producto */}
+        <div
+          style={{
+            color: '#111',
+            fontWeight: 400,
+            fontSize: '15px',
+            marginBottom: '2px',
+            lineHeight: 1.3,
+          }}
+        >
+          {product.nombre}
+        </div>
+
+        {/* Categoría */}
+        <div style={{ color: '#777', fontSize: '13px', fontWeight: 300 }}>
+          {product.categoriaNombre || 'General'}
         </div>
       </div>
     </div>

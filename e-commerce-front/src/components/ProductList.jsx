@@ -167,7 +167,7 @@ function ProductList() {
 
       <div className="row">
         {products.map((product) => (
-          <div className="col-md-4 mb-4" key={product.id}>
+          <div className="col-6 col-md-3 mb-4" key={product.id}>
             <ProductCard product={product} />
           </div>
         ))}

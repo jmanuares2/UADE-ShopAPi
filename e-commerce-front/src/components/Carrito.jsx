@@ -129,7 +129,7 @@ function Carrito() {
                 {cartItems.map((item) => (
                   <tr key={item.id}>
                     <td>{item.productoNombre || item.nombreProducto || item.producto?.nombre || '—'}</td>
-                    <td>${item.precioUnitario?.toFixed(2)}</td>
+                    <td>${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')}</td>
                     <td>
                       <div className="d-flex align-items-center gap-2">
                         <button
@@ -151,7 +151,7 @@ function Carrito() {
                         >+</button>
                       </div>
                     </td>
-                    <td>${(item.precioUnitario * item.cantidad)?.toFixed(2)}</td>
+                    <td>${Math.round(Number(item.precioUnitario * item.cantidad || 0)).toLocaleString('es-AR')}</td>
                     <td>
                       <button
                         className="btn btn-sm btn-outline-danger"
@@ -172,7 +172,7 @@ function Carrito() {
             </button>
             <div className="text-end">
               <p className="fs-5 fw-bold mb-2">
-                Total: ${cartItems.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0).toFixed(2)}
+                Total: ${Math.round(cartItems.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0)).toLocaleString('es-AR')}
               </p>
               <button className="btn btn-success btn-lg" onClick={handleCheckout}>
                 Confirmar compra

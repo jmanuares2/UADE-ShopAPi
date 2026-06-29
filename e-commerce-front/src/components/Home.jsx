@@ -134,15 +134,10 @@ function Home() {
         {/* Sección Descubre lo nuevo */}
         <div style={{ background: '#fff', padding: '64px 24px' }}>
           <div style={{ maxWidth: 1300, margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28 }}>
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, margin: 0, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Descubre lo nuevo
-                </h2>
-              </div>
-              <Link to="/productos" style={{ color: '#111', fontWeight: 700, fontSize: 13, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                VER MÁS
-              </Link>
+            <div style={{ marginBottom: 28 }}>
+              <h2 style={{ fontSize: 26, fontWeight: 700, margin: 0, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Descubre lo nuevo
+              </h2>
             </div>
 
             <div style={{ display: 'flex', gap: '20px', alignItems: 'stretch', overflowX: 'auto', paddingBottom: '16px' }}>
