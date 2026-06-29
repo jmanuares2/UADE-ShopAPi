@@ -194,6 +194,7 @@ public class ProductoService {
                 .categoriaNombre(p.getCategoria().getNombre())
                 .creadorId(p.getCreador().getId())
                 .creadorNombre(p.getCreador().getNombre() + " " + p.getCreador().getApellido())
+                .fechaCreacion(p.getFechaCreacion())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.uade.tpo.e_commerce.config;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,7 @@ public class DataSeedingConfig {
                             .color("Negro")
                             .categoria(remeras)
                             .creador(creador)
+                            .fechaCreacion(LocalDateTime.now().minusDays(10))
                             .build();
 
                     Producto p2 = Producto.builder()
@@ -93,9 +95,36 @@ public class DataSeedingConfig {
                             .color("Verde")
                             .categoria(pantalones)
                             .creador(creador)
+                            .fechaCreacion(LocalDateTime.now().minusDays(5))
                             .build();
 
-                    productoRepository.saveAll(List.of(p1, p2));
+                    Producto p3 = Producto.builder()
+                            .nombre("Zapatillas Running Pro")
+                            .descripcion("Zapatillas livianas con amortiguación")
+                            .precio(85000.0)
+                            .stock(15)
+                            .imagenUrl("https://picsum.photos/seed/producto3/400/600")
+                            .talle("41")
+                            .color("Blanco")
+                            .categoria(calzado)
+                            .creador(creador)
+                            .fechaCreacion(LocalDateTime.now().minusDays(2))
+                            .build();
+
+                    Producto p4 = Producto.builder()
+                            .nombre("Camiseta Selección Argentina")
+                            .descripcion("Camiseta titular edición especial")
+                            .precio(149999.0)
+                            .stock(35)
+                            .imagenUrl("https://picsum.photos/seed/producto4/400/600")
+                            .talle("M")
+                            .color("Celeste y Blanco")
+                            .categoria(remeras)
+                            .creador(creador)
+                            .fechaCreacion(LocalDateTime.now())
+                            .build();
+
+                    productoRepository.saveAll(List.of(p1, p2, p3, p4));
                 }
             }
         };

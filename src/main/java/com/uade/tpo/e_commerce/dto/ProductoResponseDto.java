@@ -1,5 +1,6 @@
 package com.uade.tpo.e_commerce.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +24,5 @@ public class ProductoResponseDto {
     private String categoriaNombre;
     private Long creadorId;
     private String creadorNombre;
+    private LocalDateTime fechaCreacion;
 }

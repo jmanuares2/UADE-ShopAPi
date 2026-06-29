@@ -1,6 +1,39 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import api from '../services/api';
+import ProductCard from './ProductCard';
+import { fetchFavorites } from '../store/favoritesSlice';
 
 function Home() {
+  const dispatch = useDispatch();
+  const [productosNuevos, setProductosNuevos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    dispatch(fetchFavorites());
+    const cargarProductos = async () => {
+      try {
+        const res = await api.get('/productos');
+        const lista = res.data || [];
+        const disponibles = lista.filter(p => p.stock > 0);
+        const aOrdenar = disponibles.length > 0 ? disponibles : lista;
+        
+        aOrdenar.sort((a, b) => {
+          const fechaA = a.fechaCreacion ? new Date(a.fechaCreacion).getTime() : 0;
+          const fechaB = b.fechaCreacion ? new Date(b.fechaCreacion).getTime() : 0;
+          return fechaB - fechaA;
+        });
+
+        setProductosNuevos(aOrdenar.slice(0, 4));
+      } catch (err) {
+        console.error("Error cargando productos nuevos:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    cargarProductos();
+  }, [dispatch]);
 
   return (
     <>
@@ -19,6 +52,12 @@ function Home() {
         .benefit-card:hover {
           box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
           transform: translateY(-8px);
+        }
+        .see-more-arrow:hover {
+          background: #111 !important;
+          color: #fff !important;
+          transform: translateX(4px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
       `}</style>
 
@@ -60,6 +99,62 @@ function Home() {
           >
             Comprar ahora
           </Link>
+        </div>
+
+        {/* Sección Descubre lo nuevo */}
+        <div style={{ background: '#fff', padding: '64px 24px' }}>
+          <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28 }}>
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, margin: 0, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Descubre lo nuevo
+                </h2>
+              </div>
+              <Link to="/productos" style={{ color: '#111', fontWeight: 700, fontSize: 13, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                VER MÁS
+              </Link>
+            </div>
+
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'stretch', overflowX: 'auto', paddingBottom: '16px' }}>
+              {loading ? (
+                <div style={{ width: '100%', textAlign: 'center', padding: '48px 0' }}>
+                  <div className="spinner-border text-dark" role="status"></div>
+                </div>
+              ) : productosNuevos.length === 0 ? (
+                <p style={{ color: '#666' }}>No hay productos disponibles en este momento.</p>
+              ) : (
+                <>
+                  {productosNuevos.map(producto => (
+                    <div key={producto.id} style={{ flex: '1 1 0', minWidth: '240px' }}>
+                      <ProductCard product={producto} />
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Link
+                      to="/productos"
+                      className="see-more-arrow"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '64px',
+                        height: '64px',
+                        background: '#fff',
+                        border: '1px solid #111',
+                        color: '#111',
+                        textDecoration: 'none',
+                        fontSize: '24px',
+                        transition: 'all 0.25s ease',
+                      }}
+                      title="Ver todos los productos"
+                    >
+                      →
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         <div style={{ background: '#f8f8f8', padding: '48px 24px' }}>
