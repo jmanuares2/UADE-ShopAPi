@@ -132,7 +132,7 @@ function ProductCard({ product }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '0 4px' }}>
         <div style={{ marginBottom: '4px' }}>
-          <div style={{ color: '#ffffffff', fontSize: '13px', fontWeight: 400 , backgroundColor: '#464646ff', padding: '0px 6px', borderRadius: '4px', width:'fit-content', marginBottom: '4px'}}>
+          <div style={{ color: '#ffffffff', fontSize: '13px', fontWeight: 400 , backgroundColor: '#464646ff', padding: '1px 6px', borderRadius: '4px', width:'fit-content', marginBottom: '4px'}}>
             {product.categoriaNombre || 'General'}
           </div>
           <div

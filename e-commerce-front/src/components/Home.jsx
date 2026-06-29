@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import api from '../services/api';
 import ProductCard from './ProductCard';
 import { fetchFavorites } from '../store/favoritesSlice';
-// Importa tu video
 import heroVideo from '../assets/video.mp4';
 import enzoImg from '../assets/enzo.png';
 
@@ -243,30 +242,30 @@ function Home() {
           </div>
         )}
 
-        <div style={{ background: '#f8f8f8', padding: '48px 24px' }}>
-          <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div style={{ background: '#f8f8f8', padding: '64px 24px' }}>
+          <div style={{ maxWidth: 1300, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
             {[
               { 
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>, 
+                icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>, 
                 title: 'Envío gratis', desc: 'En compras mayores a $30.000' 
               },
               { 
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>, 
+                icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>, 
                 title: 'Compra Segura', desc: 'Máxima seguridad al realizar tu compra' 
               },
               { 
-                icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>, 
+                icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>, 
                 title: 'Devoluciones', desc: '30 días para cambiar tu producto' 
               },
             ].map(({ icon, title, desc }, index) => (
               <div
                 key={index}
                 className="benefit-card"
-                style={{ background: '#fff', borderRadius: 8, padding: '28px 20px', textAlign: 'center', transition: 'all 0.3s ease' }}
+                style={{ background: '#fff', borderRadius: 8, padding: '32px 24px', textAlign: 'center', transition: 'all 0.3s ease' }}
               >
-                <span style={{ display: 'block', marginBottom: 16, color: '#222' }}>{icon}</span>
-                <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, color: '#111' }}>{title}</h4>
-                <p style={{ fontSize: 13, color: '#888', lineHeight: 1.5 }}>{desc}</p>
+                <span style={{ display: 'block', marginBottom: 20, color: '#222' }}>{icon}</span>
+                <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{title}</h4>
+                <p style={{ fontSize: 14, color: '#888', lineHeight: 1.5 }}>{desc}</p>
               </div>
             ))}
           </div>
