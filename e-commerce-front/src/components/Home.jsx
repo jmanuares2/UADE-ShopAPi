@@ -6,10 +6,12 @@ import ProductCard from './ProductCard';
 import { fetchFavorites } from '../store/favoritesSlice';
 // Importa tu video
 import heroVideo from '../assets/video.mp4';
+import enzoImg from '../assets/enzo.png';
 
 function Home() {
   const dispatch = useDispatch();
   const [productosNuevos, setProductosNuevos] = useState([]);
+  const [productosOfertas, setProductosOfertas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +30,9 @@ function Home() {
         });
 
         setProductosNuevos(aOrdenar.slice(0, 4));
+
+        const conDescuento = disponibles.filter(p => p.descuento && p.descuento > 0);
+        setProductosOfertas(conDescuento.slice(0, 4));
       } catch (err) {
         console.error("Error cargando productos nuevos:", err);
       } finally {
@@ -150,7 +155,7 @@ function Home() {
               ) : (
                 <>
                   {productosNuevos.map(producto => (
-                    <div key={producto.id} style={{ flex: '1 1 0', minWidth: '240px' }}>
+                    <div key={producto.id} style={{ flex: '0 0 calc(25% - 15px)', minWidth: '240px' }}>
                       <ProductCard product={producto} />
                     </div>
                   ))}
@@ -181,6 +186,62 @@ function Home() {
             </div>
           </div>
         </div>
+
+        {/* Banner de Ofertas */}
+        <div style={{ background: '#fff', padding: '0 24px 32px 24px' }}>
+          <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+            <Link to="/productos?descuento=true">
+              <img
+                src={enzoImg}
+                alt="50% OFF en la tercera unidad"
+                style={{ width: '100%', borderRadius: '8px', display: 'block', objectFit: 'cover', maxHeight: '520px' }}
+              />
+            </Link>
+          </div>
+        </div>
+
+        {/* Sección Ofertas */}
+        {productosOfertas.length > 0 && (
+          <div style={{ background: '#fff', padding: '16px 24px 64px 24px' }}>
+            <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+              <div style={{ marginBottom: 28 }}>
+                <h2 style={{ fontSize: 26, fontWeight: 700, margin: 0, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Ofertas imperdibles
+                </h2>
+              </div>
+
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'stretch', overflowX: 'auto', paddingBottom: '16px' }}>
+                {productosOfertas.map(producto => (
+                  <div key={producto.id} style={{ flex: '0 0 calc(25% - 15px)', minWidth: '240px' }}>
+                    <ProductCard product={producto} />
+                  </div>
+                ))}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <Link
+                    to="/productos?descuento=true"
+                    className="see-more-arrow"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '64px',
+                      height: '64px',
+                      background: '#fff',
+                      border: '1px solid #111',
+                      color: '#111',
+                      textDecoration: 'none',
+                      fontSize: '24px',
+                      transition: 'all 0.25s ease',
+                    }}
+                    title="Ver todas las ofertas"
+                  >
+                    →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div style={{ background: '#f8f8f8', padding: '48px 24px' }}>
           <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>

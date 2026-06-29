@@ -73,9 +73,9 @@ function ProductCard({ product }) {
             src={product.imagenUrl}
             alt={product.nombre}
             style={{
-              width: '92%',
-              height: '92%',
-              objectFit: 'contain',
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
               transition: 'transform 0.3s ease',
             }}
           />
