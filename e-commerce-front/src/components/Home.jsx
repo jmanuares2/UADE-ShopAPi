@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import api from '../services/api';
 import ProductCard from './ProductCard';
 import { fetchFavorites } from '../store/favoritesSlice';
+// Importa tu video
+import heroVideo from '../assets/video.mp4';
 
 function Home() {
   const dispatch = useDispatch();
@@ -65,10 +67,6 @@ function Home() {
 
         <div style={{
         minHeight: '70vh',
-        background: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url("https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=2072&auto=format&fit=crop")',
-        backgroundSize: '100%',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center 15%',
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',
@@ -76,7 +74,39 @@ function Home() {
         justifyContent: 'center',
         textAlign: 'center',
         padding: '80px 24px',
+        position: 'relative', // Para posicionar el video como fondo
+        overflow: 'hidden', // Para que el video no se salga
         }}>
+          {/* Video de fondo */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover', // Ajusta el video para cubrir todo el espacio
+              zIndex: -1, // Pone el video detrás del contenido
+              opacity: 0.8, // Ajusta la opacidad si quieres
+            }}
+          >
+            <source src={heroVideo} type="video/mp4" />
+            Tu navegador no soporta videos.
+          </video>
+          {/* Overlay oscuro para que el texto sea legible */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.4)',
+            zIndex: -1,
+          }}></div>
           <p style={{ fontSize: 14, fontWeight: 300, letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.8, marginBottom: 24 }}>
             Encontrá lo que buscás
           </p>

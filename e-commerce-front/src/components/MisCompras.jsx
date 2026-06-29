@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMisCompras, eliminarVenta, limpiarHistorial, clearError } from '../store/misComprasSlice';
 
 const MisCompras = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items: compras, loading, error } = useSelector((state) => state.misCompras);
 
   useEffect(() => {
@@ -21,8 +23,8 @@ const MisCompras = () => {
 
   if (loading) {
     return (
-      <div className="container mt-4">
-        <p>Cargando compras...</p>
+      <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
   }
@@ -38,10 +40,12 @@ const MisCompras = () => {
   if (compras.length === 0) {
     return (
       <div className="container mt-4">
-        <div className="d-flex flex-column justify-content-between align-items-start mb-4">
-          <h2>Mis Compras</h2>
-          <h5 className="text-muted mb-3">Aún no realizaste ninguna compra.</h5>
-          
+      <h2 className="mb-4">Mis Compras</h2>
+      <div className="text-center py-5">
+          <p className="text-muted fs-5">Aún no realizaste ninguna compra.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/productos')}>
+            Ver productos
+          </button>
         </div>
       </div>
     );
