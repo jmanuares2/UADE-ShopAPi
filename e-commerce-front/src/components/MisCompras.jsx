@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMisCompras, eliminarVenta, limpiarHistorial, clearError } from '../store/misComprasSlice';
+import { fetchMisCompras, clearError } from '../store/misComprasSlice';
 
 const MisCompras = () => {
   const dispatch = useDispatch();
@@ -26,14 +26,6 @@ const MisCompras = () => {
   useEffect(() => {
     console.log('Datos de compras:', compras);
   }, [compras]);
-
-  const handleEliminar = (id) => {
-    dispatch(eliminarVenta(id));
-  };
-
-  const handleLimpiarHistorial = () => {
-    dispatch(limpiarHistorial());
-  };
 
   if (loading) {
     return (
@@ -67,11 +59,8 @@ const MisCompras = () => {
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="mb-4">
         <h2>Mis Compras</h2>
-        <button className="btn btn-outline-danger btn-sm" onClick={handleLimpiarHistorial}>
-          Limpiar Historial
-        </button>
       </div>
 
       <div className="card shadow-sm">
@@ -106,15 +95,9 @@ const MisCompras = () => {
                   </div>
                 </div>
                 <div className="d-flex align-items-center">
-                  <span className="fw-bold me-3">
+                  <span className="fw-bold fs-5 text-success">
                     ${Math.round(Number((item.descuento > 0 ? precioFinal * item.cantidad : item.subtotal || 0))).toLocaleString('es-AR')}
                   </span>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleEliminar(item.id)}
-                  >
-                    Eliminar
-                  </button>
                 </div>
               </div>
             );
