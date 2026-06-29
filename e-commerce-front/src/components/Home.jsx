@@ -94,9 +94,9 @@ function Home() {
               left: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover', // Ajusta el video para cubrir todo el espacio
-              zIndex: -1, // Pone el video detrás del contenido
-              opacity: 0.8, // Ajusta la opacidad si quieres
+              objectFit: 'cover',
+              zIndex: -1,
+              opacity: 0.8,
             }}
           >
             <source src={heroVideo} type="video/mp4" />

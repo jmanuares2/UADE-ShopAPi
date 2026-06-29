@@ -99,7 +99,13 @@ function ProductList() {
       lista = lista.filter(p => p.descuento && p.descuento > 0);
     }
 
-    if (ordenPrecio === 'menor') {
+    if (ordenPrecio === 'masReciente') {
+      lista.sort((a, b) => {
+        const fechaA = new Date(a.fechaCreacion);
+        const fechaB = new Date(b.fechaCreacion);
+        return fechaB - fechaA;
+      });
+    } else if (ordenPrecio === 'menor') {
       lista.sort((a, b) => {
         const precioA = a.descuento > 0 ? a.precio * (1 - a.descuento / 100) : a.precio;
         const precioB = b.descuento > 0 ? b.precio * (1 - b.descuento / 100) : b.precio;
@@ -192,6 +198,7 @@ function ProductList() {
                 onChange={(e) => setOrdenPrecio(e.target.value)}
               >
                 <option value="">Relevancia</option>
+                <option value="masReciente">Más recientes primero</option>
                 <option value="menor">Precio: menor a mayor</option>
                 <option value="mayor">Precio: mayor a menor</option>
               </select>

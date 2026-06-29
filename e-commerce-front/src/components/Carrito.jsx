@@ -1,4 +1,3 @@
-// c:\Users\gnlag\Documents\GitHub\UADE-ShopAPi\e-commerce-front\src\components\Carrito.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';

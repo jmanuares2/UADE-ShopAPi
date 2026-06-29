@@ -49,7 +49,10 @@ function ProductCard({ product }) {
         flexDirection: 'column',
         height: '100%',
         background: 'transparent',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         transition: 'transform 0.2s ease',
+        borderRadius: '6px',
+        paddingBottom: '8px',
       }}
       className="product-card-container"
     >
@@ -61,6 +64,8 @@ function ProductCard({ product }) {
           aspectRatio: '1 / 1', // Proporción perfecta para que ocupe aprox 2/3 de la tarjeta
           background: '#f5f5f5',
           borderRadius: '6px',
+          borderBottomLeftRadius: '0px',
+          borderBottomRightRadius: '0px',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
@@ -83,7 +88,6 @@ function ProductCard({ product }) {
           <span style={{ color: '#aaa', fontSize: '13px' }}>Sin imagen</span>
         )}
 
-        {/* Badge de descuento */}
         {product.descuento > 0 && (
           <span className="badge bg-danger" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
             -{product.descuento}%
@@ -95,11 +99,11 @@ function ProductCard({ product }) {
           onClick={handleFavoriteClick}
           style={{
             position: 'absolute',
-            top: '12px',
-            right: '12px',
+            top: '10px',
+            right: '10px',
             background: 'transparent',
             border: 'none',
-            padding: '6px',
+            padding: '4px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -107,6 +111,7 @@ function ProductCard({ product }) {
             color: isFavorite ? '#e53935' : '#111',
             transition: 'transform 0.2s ease',
             zIndex: 2,
+            borderRadius: '10%',
           }}
           title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
@@ -125,10 +130,22 @@ function ProductCard({ product }) {
         </button>
       </div>
 
-      {/* Contenedor de datos: 1/3 */}
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '0 4px' }}>
-        {/* Precio con descuento (si aplica) */}
         <div style={{ marginBottom: '4px' }}>
+          <div style={{ color: '#ffffffff', fontSize: '13px', fontWeight: 400 , backgroundColor: '#464646ff', padding: '0px 6px', borderRadius: '4px', width:'fit-content', marginBottom: '4px'}}>
+            {product.categoriaNombre || 'General'}
+          </div>
+          <div
+            style={{
+              color: '#111',
+              fontWeight: 400,
+              fontSize: '15px',
+              marginBottom: '2px',
+              lineHeight: 1.3,
+            }}
+          >
+            {product.nombre}
+          </div>
           {product.descuento > 0 ? (
             <div>
               <span style={{ color: '#777', textDecoration: 'line-through', fontSize: '13px', marginRight: '6px' }}>
@@ -139,28 +156,10 @@ function ProductCard({ product }) {
               </span>
             </div>
           ) : (
-            <div style={{ color: '#e53935', fontWeight: 700, fontSize: '16px' }}>
+            <div style={{ color: '#000000ff', fontWeight: 700, fontSize: '16px' }}>
               $ {formatPrecio(product.precio)}
             </div>
           )}
-        </div>
-
-        {/* Nombre del producto */}
-        <div
-          style={{
-            color: '#111',
-            fontWeight: 400,
-            fontSize: '15px',
-            marginBottom: '2px',
-            lineHeight: 1.3,
-          }}
-        >
-          {product.nombre}
-        </div>
-
-        {/* Categoría */}
-        <div style={{ color: '#777', fontSize: '13px', fontWeight: 300 }}>
-          {product.categoriaNombre || 'General'}
         </div>
       </div>
     </div>

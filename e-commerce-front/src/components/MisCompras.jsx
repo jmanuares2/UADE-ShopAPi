@@ -1,4 +1,3 @@
-// c:\Users\gnlag\Documents\GitHub\UADE-ShopAPi\e-commerce-front\src\components\MisCompras.jsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +8,6 @@ const MisCompras = () => {
   const navigate = useNavigate();
   const { items: compras, loading, error } = useSelector((state) => state.misCompras);
 
-  // Función para calcular precio final con descuento
   const calcularPrecioFinal = (item) => {
     if (item.descuento > 0) {
       return item.precioUnitario * (1 - item.descuento / 100);
@@ -22,7 +20,6 @@ const MisCompras = () => {
     dispatch(clearError());
   }, [dispatch]);
 
-  // Verifica qué datos llegan del backend
   useEffect(() => {
     console.log('Datos de compras:', compras);
   }, [compras]);
