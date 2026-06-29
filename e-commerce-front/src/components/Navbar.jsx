@@ -97,13 +97,16 @@ function Navbar() {
               )}
               {/* Este link aparece solamente si existe user.
                   Es otro ejemplo de renderizado condicional. */}
-              {user && (
+              {user && (<>
                 <li className="nav-item">
                   <Link className="nav-link px-3" to="/favoritos" onClick={() => setIsOpen(false)}>Mis Favoritos</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link px-3" to="/mis-compras" onClick={() => setIsOpen(false)}>Mis Compras</Link>
+                </li>
+              </>
               )}
             </ul>
-
             <ul className="navbar-nav ms-auto align-items-center">
               {!user ? (
                 <li className="nav-item">

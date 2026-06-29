@@ -16,6 +16,7 @@ import Favorite from './components/Favorite';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
 import CheckoutExito from './components/CheckoutExito';
+import MisCompras from './components/MisCompras';
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Favorite />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mis-compras"
+            element={
+              <ProtectedRoute>
+                <MisCompras />
               </ProtectedRoute>
             }
           />
