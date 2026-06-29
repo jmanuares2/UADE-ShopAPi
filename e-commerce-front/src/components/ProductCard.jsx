@@ -6,7 +6,7 @@ import { setCart } from '../store/cartSlice';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({ product }) {
   const { user } = useAuth();
 
   // useDispatch permite ejecutar acciones sobre el store de Redux
@@ -39,7 +39,6 @@ function ProductCard({ product, onAddToCart }) {
       dispatch(setCart(carrito.items ?? []));
       const itemActualizado = carrito.items?.find((item) => item.productoId === product.id);
       const nuevaCantidad = itemActualizado?.cantidad ?? cantidad;
-      if (onAddToCart) onAddToCart();
       showMsg(`Agregado: ${cantidad}. En carrito: ${nuevaCantidad}`);
     } catch (err) {
       const data = err.response?.data;

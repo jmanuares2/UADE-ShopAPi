@@ -61,6 +61,8 @@ public class AuthenticationService {
         return AuthResponse.builder()
                 .userId(usuario.getId())
                 .token(token)
+                .nombre(usuario.getNombre())
+                .apellido(usuario.getApellido())
                 .role(usuario.getRole().name())
                 .build();
     }
@@ -85,6 +87,8 @@ public class AuthenticationService {
         return AuthResponse.builder()
                 .userId(user.getId())
                 .token(token)
+                .nombre(user.getNombre())
+                .apellido(user.getApellido())
                 .role(user.getRole().name())
                 .build();
     }

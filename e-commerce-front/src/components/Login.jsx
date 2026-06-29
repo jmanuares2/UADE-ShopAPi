@@ -12,7 +12,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();  
     setError(null);
     setLoading(true);
     try {
@@ -23,6 +23,7 @@ function Login() {
           userId: data.userId,
           email: email,
           nombre: data.nombre,
+          apellido: data.apellido,
           role: data.role
         });
       navigate('/');

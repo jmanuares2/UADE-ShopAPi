@@ -22,6 +22,13 @@ public class PerfilService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public boolean verificarPasswordActual(String passwordActual) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return passwordEncoder.matches(passwordActual, usuario.getPassword());
+    }
+
     public UsuarioResponseDto actualizarPerfil(PerfilRequestDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)

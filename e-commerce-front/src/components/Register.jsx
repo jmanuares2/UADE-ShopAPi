@@ -28,7 +28,7 @@ function Register() {
       const response = await api.post('/auth/register', form);
       const data = response.data;
       // AuthResponse: { userId, token, role }
-      login({ userId: data.userId, email: form.email, nombre: form.nombre, role: data.role });
+      login({ userId: data.userId, email: form.email, nombre: form.nombre, apellido: form.apellido, role: data.role });
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data || 'Error al registrarse');

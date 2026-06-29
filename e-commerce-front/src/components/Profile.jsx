@@ -8,16 +8,19 @@ function Profile() {
   const navigate = useNavigate();
 
   const [editando, setEditando] = useState(false);
+  const [pasoCambioPassword, setPasoCambioPassword] = useState(0); // 0: no, 1: verificar actual, 2: ingresar nueva
   const [form, setForm] = useState({
     nombre: user?.nombre || '',
     apellido: user?.apellido || '',
     email: user?.email || '',
     passwordActual: '',
     passwordNueva: '',
+    passwordNuevaConfirmar: '',
   });
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  
 
   if (!user) {
     return (
@@ -36,7 +39,66 @@ function Profile() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleGuardar = async (e) => {
+
+  const handleVerificarPasswordActual = async (e) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    try {
+      const response = await api.post('/perfil/verificar-password', { passwordActual: form.passwordActual });
+      if (response.data.valido) {
+        setPasoCambioPassword(2);
+        setErrorMsg(null);
+      } else {
+        setErrorMsg('La contraseña actual es incorrecta');
+      }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || 'Error al verificar la contraseña');
+    }
+  };
+
+  const handleCancelarCambioPassword = () => {
+    setPasoCambioPassword(0);
+    setForm((prev) => ({ ...prev, passwordActual: '', passwordNueva: '', passwordNuevaConfirmar: '' }));
+  };
+
+  const handleGuardarCambioPassword = async (e) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    
+    if (form.passwordNueva !== form.passwordNuevaConfirmar) {
+      setErrorMsg('Las nuevas contraseñas no coinciden');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload = {
+        nombre: form.nombre,
+        apellido: form.apellido,
+        email: form.email,
+        passwordActual: form.passwordActual,
+        passwordNueva: form.passwordNueva,
+      };
+      const response = await api.put('/perfil', payload);
+      const updatedUser = response.data;
+      login({
+        ...user,
+        nombre: updatedUser.nombre,
+        apellido: updatedUser.apellido,
+        email: updatedUser.email,
+      });
+      setSuccessMsg('Perfil y contraseña actualizados correctamente.');
+      setEditando(false);
+      setPasoCambioPassword(0);
+      setForm((prev) => ({ ...prev, passwordActual: '', passwordNueva: '', passwordNuevaConfirmar: '' }));
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || err.response?.data || 'Error al actualizar el perfil');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleGuardarPerfil = async (e) => {
     e.preventDefault();
     setSaving(true);
     setErrorMsg(null);
@@ -47,10 +109,6 @@ function Profile() {
         apellido: form.apellido,
         email: form.email,
       };
-      if (form.passwordNueva) {
-        payload.passwordActual = form.passwordActual;
-        payload.passwordNueva = form.passwordNueva;
-      }
       const response = await api.put('/perfil', payload);
       const updatedUser = response.data;
       login({
@@ -61,7 +119,7 @@ function Profile() {
       });
       setSuccessMsg('Perfil actualizado correctamente.');
       setEditando(false);
-      setForm((prev) => ({ ...prev, passwordActual: '', passwordNueva: '' }));
+      setForm((prev) => ({ ...prev, passwordActual: '', passwordNueva: '', passwordNuevaConfirmar: '' }));
     } catch (err) {
       setErrorMsg(err.response?.data?.message || err.response?.data || 'Error al actualizar el perfil');
     } finally {
@@ -73,7 +131,11 @@ function Profile() {
     <div className="container mt-4" style={{ maxWidth: '520px' }}>
       <div className="card shadow-sm">
         <div className="card-body">
-          <h3 className="card-title mb-4">Mi Perfil</h3>
+          {pasoCambioPassword === 0 ? (
+            <h3 className="card-title mb-4">Mi Perfil</h3>
+          ):(
+            <h3 className="card-title mb-4">Cambiar Contraseña</h3>
+          )}
 
           {successMsg && (
             <div className="alert alert-success alert-dismissible py-2">
@@ -90,7 +152,8 @@ function Profile() {
 
           {!editando ? (
             <>
-              <p><strong>Nombre:</strong> {user.nombre} {user.apellido}</p>
+              <p><strong>Nombre:</strong> {user.nombre}</p>
+              <p><strong>Apellido:</strong> {user.apellido}</p>
               <p><strong>Email:</strong> {user.email}</p>
               <p>
                 <strong>Rol:</strong>{' '}
@@ -124,8 +187,8 @@ function Profile() {
                 </button>
               </div>
             </>
-          ) : (
-            <form onSubmit={handleGuardar}>
+          ) : pasoCambioPassword === 0 ? (
+            <form onSubmit={handleGuardarPerfil}>
               <div className="mb-3">
                 <label className="form-label">Nombre</label>
                 <input
@@ -160,27 +223,9 @@ function Profile() {
                 />
               </div>
               <hr />
-              <p className="text-muted small">Completá solo si querés cambiar la contraseña</p>
-              <div className="mb-3">
-                <label className="form-label">Contraseña actual</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  name="passwordActual"
-                  value={form.passwordActual}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Nueva contraseña</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  name="passwordNueva"
-                  value={form.passwordNueva}
-                  onChange={handleChange}
-                />
-              </div>
+              <button type="button" className="btn btn-outline-primary mb-3" onClick={() => setPasoCambioPassword(1)}>
+                Cambiar contraseña
+              </button>
               <div className="d-flex gap-2">
                 <button type="submit" className="btn btn-primary" disabled={saving}>
                   {saving ? 'Guardando...' : 'Guardar cambios'}
@@ -190,7 +235,64 @@ function Profile() {
                 </button>
               </div>
             </form>
-          )}
+          ) : pasoCambioPassword === 1 ? (
+            <form onSubmit={handleVerificarPasswordActual}>
+              <div className="mb-3">
+                <p className="text-muted small">Primero ingresa tu contraseña actual para confirmar el cambio</p>
+                <label className="form-label">Contraseña Actual</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="passwordActual"
+                  value={form.passwordActual}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? 'Verificando...' : 'Verificar contraseña'}
+                </button>
+                <button type="button" className="btn btn-outline-secondary" onClick={handleCancelarCambioPassword}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleGuardarCambioPassword}>
+              <div className="mb-3">
+                <label className="form-label">Nueva Contraseña</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="passwordNueva"
+                  value={form.passwordNueva}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Confirmar Nueva Contraseña</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  name="passwordNuevaConfirmar"
+                  value={form.passwordNuevaConfirmar}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? 'Guardando...' : 'Guardar nueva contraseña'}
+                </button>
+                <button type="button" className="btn btn-outline-secondary" onClick={handleCancelarCambioPassword}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          )
+          }
         </div>
       </div>
     </div>
