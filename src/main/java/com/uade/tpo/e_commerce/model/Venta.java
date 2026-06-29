@@ -42,6 +42,9 @@ public class Venta {
     @Column(nullable = false)
     private Double precioUnitario;
 
+    @Column(nullable = true)
+    private Integer descuento;
+
     @Column(nullable = false)
     private LocalDateTime fechaVenta;
 }

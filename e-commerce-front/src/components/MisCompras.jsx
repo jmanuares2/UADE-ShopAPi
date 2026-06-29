@@ -1,3 +1,4 @@
+// c:\Users\gnlag\Documents\GitHub\UADE-ShopAPi\e-commerce-front\src\components\MisCompras.jsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,10 +9,23 @@ const MisCompras = () => {
   const navigate = useNavigate();
   const { items: compras, loading, error } = useSelector((state) => state.misCompras);
 
+  // Función para calcular precio final con descuento
+  const calcularPrecioFinal = (item) => {
+    if (item.descuento > 0) {
+      return item.precioUnitario * (1 - item.descuento / 100);
+    }
+    return item.precioUnitario;
+  };
+
   useEffect(() => {
     dispatch(fetchMisCompras());
     dispatch(clearError());
   }, [dispatch]);
+
+  // Verifica qué datos llegan del backend
+  useEffect(() => {
+    console.log('Datos de compras:', compras);
+  }, [compras]);
 
   const handleEliminar = (id) => {
     dispatch(eliminarVenta(id));
@@ -24,7 +38,7 @@ const MisCompras = () => {
   if (loading) {
     return (
       <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status"></div>
+        <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
   }
@@ -40,8 +54,8 @@ const MisCompras = () => {
   if (compras.length === 0) {
     return (
       <div className="container mt-4">
-      <h2 className="mb-4">Mis Compras</h2>
-      <div className="text-center py-5">
+        <h2 className="mb-4">Mis Compras</h2>
+        <div className="text-center py-5">
           <p className="text-muted fs-5">Aún no realizaste ninguna compra.</p>
           <button className="btn btn-primary" onClick={() => navigate('/productos')}>
             Ver productos
@@ -62,36 +76,49 @@ const MisCompras = () => {
 
       <div className="card shadow-sm">
         <div className="card-body">
-          {compras.map((item) => (
-            <div key={item.id} className="d-flex justify-content-between align-items-center border-bottom py-3">
-              <div className="d-flex align-items-center">
-                {item.imagenProducto && (
-                  <img
-                    src={item.imagenProducto}
-                    alt={item.nombreProducto}
-                    style={{ width: '60px', height: '60px', objectFit: 'cover', marginRight: '1rem' }}
-                  />
-                )}
-                <div>
-                  <h6 className="mb-0">{item.nombreProducto}</h6>
-                  <small className="text-muted">
-                    Cantidad: {item.cantidad} - Precio: ${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')} - Fecha: {new Date(item.fechaVenta).toLocaleString('es-AR')}
-                  </small>
+          {compras.map((item) => {
+            const precioFinal = calcularPrecioFinal(item);
+            const precioMostrar = item.descuento > 0 ? precioFinal : item.precioUnitario;
+            return (
+              <div key={item.id} className="d-flex justify-content-between align-items-center border-bottom py-3">
+                <div className="d-flex align-items-center">
+                  {item.imagenProducto && (
+                    <img
+                      src={item.imagenProducto}
+                      alt={item.nombreProducto}
+                      style={{ width: '60px', height: '60px', objectFit: 'cover', marginRight: '1rem' }}
+                    />
+                  )}
+                  <div>
+                    <h6 className="mb-0 d-flex align-items-center">
+                      {item.nombreProducto}
+                      {item.descuento > 0 && (
+                        <span className="badge bg-danger ms-2">-{item.descuento}%</span>
+                      )}
+                    </h6>
+                    <small className="text-muted">
+                      Cantidad: {item.cantidad} - Precio: 
+                      <span className={item.descuento > 0 ? 'text-danger ms-1' : 'ms-1'}>
+                        ${Math.round(Number(precioMostrar || 0)).toLocaleString('es-AR')}
+                      </span>
+                      - Fecha: {new Date(item.fechaVenta).toLocaleString('es-AR')}
+                    </small>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center">
+                  <span className="fw-bold me-3">
+                    ${Math.round(Number((item.descuento > 0 ? precioFinal * item.cantidad : item.subtotal || 0))).toLocaleString('es-AR')}
+                  </span>
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => handleEliminar(item.id)}
+                  >
+                    Eliminar
+                  </button>
                 </div>
               </div>
-              <div className="d-flex align-items-center">
-                <span className="fw-bold me-3">
-                  ${Math.round(Number(item.subtotal || 0)).toLocaleString('es-AR')}
-                </span>
-                <button
-                  className="btn btn-outline-danger btn-sm"
-                  onClick={() => handleEliminar(item.id)}
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

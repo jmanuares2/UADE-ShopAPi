@@ -17,6 +17,7 @@ public class VentaDto {
     private String imagenProducto;
     private Integer cantidad;
     private Double precioUnitario;
+    private Integer descuento;
     private Double subtotal;
     private LocalDateTime fechaVenta;
 }

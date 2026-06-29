@@ -34,6 +34,7 @@ public class VentaService {
                     .usuario(usuario)
                     .producto(itemCarrito.getProducto())
                     .cantidad(itemCarrito.getCantidad())
+                    .descuento(itemCarrito.getDescuento())
                     .precioUnitario(itemCarrito.getPrecioUnitario())
                     .fechaVenta(LocalDateTime.now())
                     .build();
@@ -84,6 +85,7 @@ public class VentaService {
                 .cantidad(pv.getCantidad())
                 .precioUnitario(pv.getPrecioUnitario())
                 .subtotal(pv.getCantidad() * pv.getPrecioUnitario())
+                .descuento(pv.getDescuento())
                 .fechaVenta(pv.getFechaVenta())
                 .build();
     }
