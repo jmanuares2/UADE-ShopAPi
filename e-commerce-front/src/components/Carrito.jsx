@@ -1,10 +1,10 @@
+// c:\Users\gnlag\Documents\GitHub\UADE-ShopAPi\e-commerce-front\src\components\Carrito.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { setCart, emptyCart } from '../store/cartSlice';
 import { useSelector, useDispatch } from 'react-redux';
-
 
 function Carrito() {
   const { user } = useAuth();
@@ -16,6 +16,14 @@ function Carrito() {
   const [checkoutMsg, setCheckoutMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [updatingItem, setUpdatingItem] = useState(null);
+
+  // Función para calcular precio final con descuento
+  const calcularPrecioFinal = (item) => {
+    if (item.descuento > 0) {
+      return item.precioUnitario * (1 - item.descuento / 100);
+    }
+    return item.precioUnitario;
+  };
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -126,42 +134,66 @@ function Carrito() {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.productoNombre || item.nombreProducto || item.producto?.nombre || '—'}</td>
-                    <td>${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-2">
+                {cartItems.map((item) => {
+                  const precioFinal = calcularPrecioFinal(item);
+                  const subtotal = precioFinal * item.cantidad;
+                  return (
+                    <tr key={item.id}>
+                      <td>
+                        <div>
+                          {item.productoNombre || item.nombreProducto || item.producto?.nombre || '—'}
+                          {item.descuento > 0 && (
+                            <span className="badge bg-danger ms-2">-{item.descuento}%</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        {item.descuento > 0 ? (
+                          <div>
+                            <span className="text-muted text-decoration-line-through me-2">
+                              ${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')}
+                            </span>
+                            <span className="fw-semibold text-danger">
+                              ${Math.round(Number(precioFinal || 0)).toLocaleString('es-AR')}
+                            </span>
+                          </div>
+                        ) : (
+                          <span>${Math.round(Number(item.precioUnitario || 0)).toLocaleString('es-AR')}</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center gap-2">
+                          <button
+                            className="btn btn-outline-secondary btn-sm"
+                            style={{ width: '30px', padding: '0' }}
+                            onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}
+                            disabled={updatingItem === item.id || item.cantidad <= 1}
+                          >−</button>
+                          <span className="fw-semibold" style={{ minWidth: '24px', textAlign: 'center' }}>
+                            {updatingItem === item.id
+                              ? <span className="spinner-border spinner-border-sm" role="status"></span>
+                              : item.cantidad}
+                          </span>
+                          <button
+                            className="btn btn-outline-secondary btn-sm"
+                            style={{ width: '30px', padding: '0' }}
+                            onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}
+                            disabled={updatingItem === item.id}
+                          >+</button>
+                        </div>
+                      </td>
+                      <td>${Math.round(Number(subtotal || 0)).toLocaleString('es-AR')}</td>
+                      <td>
                         <button
-                          className="btn btn-outline-secondary btn-sm"
-                          style={{ width: '30px', padding: '0' }}
-                          onClick={() => handleUpdateCantidad(item.id, item.cantidad - 1)}
-                          disabled={updatingItem === item.id || item.cantidad <= 1}
-                        >−</button>
-                        <span className="fw-semibold" style={{ minWidth: '24px', textAlign: 'center' }}>
-                          {updatingItem === item.id
-                            ? <span className="spinner-border spinner-border-sm" role="status"></span>
-                            : item.cantidad}
-                        </span>
-                        <button
-                          className="btn btn-outline-secondary btn-sm"
-                          style={{ width: '30px', padding: '0' }}
-                          onClick={() => handleUpdateCantidad(item.id, item.cantidad + 1)}
-                          disabled={updatingItem === item.id}
-                        >+</button>
-                      </div>
-                    </td>
-                    <td>${Math.round(Number(item.precioUnitario * item.cantidad || 0)).toLocaleString('es-AR')}</td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        Quitar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
+                          Quitar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -172,7 +204,7 @@ function Carrito() {
             </button>
             <div className="text-end">
               <p className="fs-5 fw-bold mb-2">
-                Total: ${Math.round(cartItems.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0)).toLocaleString('es-AR')}
+                Total: ${Math.round(cartItems.reduce((acc, i) => acc + calcularPrecioFinal(i) * i.cantidad, 0)).toLocaleString('es-AR')}
               </p>
               <button className="btn btn-success btn-lg" onClick={handleCheckout}>
                 Confirmar compra

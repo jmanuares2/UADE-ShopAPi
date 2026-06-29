@@ -69,6 +69,7 @@ public class ProductoService {
                 .nombre(dto.getNombre())
                 .descripcion(dto.getDescripcion())
                 .precio(dto.getPrecio())
+                .descuento(dto.getDescuento())
                 .stock(dto.getStock())
                 .imagenUrl(dto.getImagenUrl())
                 .talle(dto.getTalle())
@@ -96,6 +97,7 @@ public class ProductoService {
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
         producto.setPrecio(dto.getPrecio());
+        producto.setDescuento(dto.getDescuento());
         producto.setStock(dto.getStock());
         producto.setImagenUrl(dto.getImagenUrl());
         producto.setTalle(dto.getTalle());
@@ -143,6 +145,10 @@ public class ProductoService {
             throw new PrecioNegativoException("El precio no puede ser negativo");
         }
 
+        if (dto.getDescuento() != null && (dto.getDescuento() < 0 || dto.getDescuento() > 100)) {
+            throw new RuntimeException("El descuento debe estar entre 0 y 100");
+        }
+
         if (dto.getStock() == null || dto.getStock() < 0) {
             throw new RuntimeException("El stock no puede ser negativo");
         }
@@ -186,6 +192,7 @@ public class ProductoService {
                 .nombre(p.getNombre())
                 .descripcion(p.getDescripcion())
                 .precio(p.getPrecio())
+                .descuento(p.getDescuento())
                 .stock(p.getStock())
                 .imagenUrl(p.getImagenUrl())
                 .talle(p.getTalle())

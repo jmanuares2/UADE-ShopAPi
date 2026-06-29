@@ -68,6 +68,14 @@ function ProductDetail() {
   const itemEnCarrito = cartItems.find((item) => item.productoId === product.id);
   const cantidadEnCarrito = itemEnCarrito?.cantidad ?? 0;
 
+  // Función para calcular precio final con descuento
+  const calcularPrecioFinal = () => {
+    if (product.descuento > 0) {
+      return product.precio * (1 - product.descuento / 100);
+    }
+    return product.precio;
+  };
+
   return (
     <div className="container mt-4">
       <button className="btn btn-outline-secondary mb-3" onClick={() => navigate(-1)}>
@@ -88,10 +96,28 @@ function ProductDetail() {
           {product.categoriaNombre && (
             <span className="badge bg-secondary mb-2">{product.categoriaNombre}</span>
           )}
+          {product.descuento > 0 && (
+            <span className="badge bg-danger mb-2 ms-2">-{product.descuento}%</span>
+          )}
           <p className="text-muted">{product.descripcion}</p>
           {product.talle && <p><strong>Talle:</strong> {product.talle}</p>}
           {product.color && <p><strong>Color:</strong> {product.color}</p>}
-          <h3 className="text-primary">${Math.round(Number(product.precio || 0)).toLocaleString('es-AR')}</h3>
+          <div className="mb-2">
+            {product.descuento > 0 ? (
+              <div>
+                <span className="text-muted text-decoration-line-through me-2 fs-5">
+                  ${Math.round(Number(product.precio || 0)).toLocaleString('es-AR')}
+                </span>
+                <h3 className="text-primary d-inline">
+                  ${Math.round(Number(calcularPrecioFinal() || 0)).toLocaleString('es-AR')}
+                </h3>
+              </div>
+            ) : (
+              <h3 className="text-primary">
+                ${Math.round(Number(product.precio || 0)).toLocaleString('es-AR')}
+              </h3>
+            )}
+          </div>
           <p className={product.stock > 0 ? 'text-success' : 'text-danger'}>
             {product.stock > 0 ? `Stock disponible: ${product.stock}` : 'Sin stock'}
           </p>

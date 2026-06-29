@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class ProductoUpdateDTO {
     private Double precio;
+    private Integer descuento;
     private Integer stock;
 }

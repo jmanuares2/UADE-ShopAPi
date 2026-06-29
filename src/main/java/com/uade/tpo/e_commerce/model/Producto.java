@@ -36,6 +36,9 @@ public class Producto {
     @Column(nullable = false)
     private Double precio;
 
+    @Column(nullable = true)
+    private Integer descuento;
+
     @Column(nullable = false)
     private Integer stock;
 

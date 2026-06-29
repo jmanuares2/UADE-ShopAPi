@@ -6,6 +6,7 @@ function ProductForm({ product, onSaved, onCancel }) {
   const [descripcion, setDescripcion] = useState('');
   const [precio, setPrecio] = useState('');
   const [stock, setStock] = useState('');
+  const [descuento, setDescuento] = useState('');
   const [imagenUrl, setImagenUrl] = useState('');
   const [talle, setTalle] = useState('');
   const [color, setColor] = useState('');
@@ -32,6 +33,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       setDescripcion(product.descripcion || '');
       setPrecio(product.precio || '');
       setStock(product.stock || '');
+      setDescuento(product.descuento || '');
       setImagenUrl(product.imagenUrl || '');
       setTalle(product.talle || '');
       setColor(product.color || '');
@@ -41,6 +43,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       setDescripcion('');
       setPrecio('');
       setStock('');
+      setDescuento('');
       setImagenUrl('');
       setTalle('');
       setColor('');
@@ -63,6 +66,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       descripcion,
       precio: Number(precio),
       stock: Number(stock),
+      descuento: descuento ? Number(descuento) : null,
       imagenUrl: imagenUrl || null,
       talle: talle || null,
       color: color || null,
@@ -106,27 +110,31 @@ function ProductForm({ product, onSaved, onCancel }) {
           <label className="form-label">Stock *</label>
           <input type="number" min="0" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} required />
         </div>
+        <div className="col mb-2">
+          <label className="form-label">Descuento (%) (opcional)</label>
+          <input type="number" min="0" max="100" className="form-control" value={descuento} onChange={(e) => setDescuento(e.target.value)} placeholder="Ej: 10" />
+        </div>
       </div>
 
       <div className="mb-2">
         <label className="form-label">URL de imagen *</label>
-        <input className="form-control" value={imagenUrl} onChange={(e) => setImagenUrl(e.target.value)} placeholder="https://..." />
+        <input className="form-control" value={imagenUrl} onChange={(e) => setImagenUrl(e.target.value)} placeholder="https://..." required/>
       </div>
 
       <div className="row">
         <div className="col mb-2">
           <label className="form-label">Talle *</label>
-          <input className="form-control" value={talle} onChange={(e) => setTalle(e.target.value)} placeholder="S, M, L, XL..." />
+          <input className="form-control" value={talle} onChange={(e) => setTalle(e.target.value)} placeholder="S, M, L, XL..." required/>
         </div>
         <div className="col mb-2">
           <label className="form-label">Color *</label>
-          <input className="form-control" value={color} onChange={(e) => setColor(e.target.value)} />
+          <input className="form-control" value={color} onChange={(e) => setColor(e.target.value)} required/>
         </div>
       </div>
 
       <div className="mb-3">
         <label className="form-label">Categoria *</label>
-        <select className="form-select" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+        <select className="form-select" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} required>
           <option value="">Seleccione una categoria...</option>
           {categorias.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.nombre}</option>

@@ -77,6 +77,7 @@ public class CarritoService {
                     .producto(producto)
                     .cantidad(req.getCantidad())
                     .precioUnitario(producto.getPrecio())
+                    .descuento(producto.getDescuento())
                     .build();
             carrito.getItems().add(newItem);
         }
@@ -158,7 +159,13 @@ public class CarritoService {
 
     private void recalcularTotal(Carrito carrito) {
         double total = carrito.getItems().stream()
-                .mapToDouble(item -> item.getCantidad() * item.getPrecioUnitario())
+                .mapToDouble(item -> {
+                    double precioFinal = item.getPrecioUnitario();
+                    if (item.getDescuento() != null && item.getDescuento() > 0) {
+                        precioFinal = item.getPrecioUnitario() * (1 - item.getDescuento() / 100.0);
+                    }
+                    return item.getCantidad() * precioFinal;
+                })
                 .sum();
         carrito.setMontoTotal(total);
     }
@@ -179,6 +186,7 @@ public class CarritoService {
                 .productoNombre(item.getProducto().getNombre())
                 .cantidad(item.getCantidad())
                 .precioUnitario(item.getPrecioUnitario())
+                .descuento(item.getDescuento())
                 .build();
     }
 }

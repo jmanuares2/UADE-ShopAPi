@@ -33,6 +33,13 @@ function ProductCard({ product }) {
     return Math.round(Number(val)).toLocaleString('es-AR');
   };
 
+  const calcularPrecioFinal = () => {
+    if (product.descuento > 0) {
+      return product.precio * (1 - product.descuento / 100);
+    }
+    return product.precio;
+  };
+
   return (
     <div
       onClick={handleCardClick}
@@ -76,6 +83,13 @@ function ProductCard({ product }) {
           <span style={{ color: '#aaa', fontSize: '13px' }}>Sin imagen</span>
         )}
 
+        {/* Badge de descuento */}
+        {product.descuento > 0 && (
+          <span className="badge bg-danger" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+            -{product.descuento}%
+          </span>
+        )}
+
         {/* Corazón de favorito arriba a la derecha */}
         <button
           onClick={handleFavoriteClick}
@@ -113,9 +127,22 @@ function ProductCard({ product }) {
 
       {/* Contenedor de datos: 1/3 */}
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '0 4px' }}>
-        {/* Precio sin decimales */}
-        <div style={{ color: '#e53935', fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>
-          $ {formatPrecio(product.precio)}
+        {/* Precio con descuento (si aplica) */}
+        <div style={{ marginBottom: '4px' }}>
+          {product.descuento > 0 ? (
+            <div>
+              <span style={{ color: '#777', textDecoration: 'line-through', fontSize: '13px', marginRight: '6px' }}>
+                $ {formatPrecio(product.precio)}
+              </span>
+              <span style={{ color: '#e53935', fontWeight: 700, fontSize: '16px' }}>
+                $ {formatPrecio(calcularPrecioFinal())}
+              </span>
+            </div>
+          ) : (
+            <div style={{ color: '#e53935', fontWeight: 700, fontSize: '16px' }}>
+              $ {formatPrecio(product.precio)}
+            </div>
+          )}
         </div>
 
         {/* Nombre del producto */}

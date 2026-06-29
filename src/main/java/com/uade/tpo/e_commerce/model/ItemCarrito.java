@@ -1,5 +1,6 @@
 package com.uade.tpo.e_commerce.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,4 +36,7 @@ public class ItemCarrito {
     private Integer cantidad;
 
     private Double precioUnitario;
+
+    @Column(nullable = true)
+    private Integer descuento;
 }

@@ -106,6 +106,7 @@ function AdminProductList() {
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Precio</th>
+                <th>Descuento</th>
                 <th>Stock</th>
                 <th>Vendedor</th>
                 <th>Acciones</th>
@@ -117,7 +118,21 @@ function AdminProductList() {
                   <td>{p.id}</td>
                   <td>{p.nombre}</td>
                   <td>{p.categoriaNombre || '—'}</td>
-                  <td>${Math.round(Number(p.precio || 0)).toLocaleString('es-AR')}</td>
+                  <td>
+                    {p.descuento > 0 ? (
+                      <div>
+                        <span className="text-muted text-decoration-line-through me-2">
+                          ${Math.round(Number(p.precio || 0)).toLocaleString('es-AR')}
+                        </span>
+                        <span className="fw-semibold text-danger">
+                          ${Math.round(Number(p.precio * (1 - p.descuento / 100) || 0)).toLocaleString('es-AR')}
+                        </span>
+                      </div>
+                    ) : (
+                      <span>${Math.round(Number(p.precio || 0)).toLocaleString('es-AR')}</span>
+                    )}
+                  </td>
+                  <td className={p.descuento ? 'text-success' : 'text-muted'}>{p.descuento ? `${p.descuento}%` : '-'}</td>
                   <td>
                     <span className={p.stock > 0 ? 'text-success' : 'text-danger'}>
                       {p.stock}
