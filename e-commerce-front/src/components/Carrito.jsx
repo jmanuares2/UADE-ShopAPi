@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { setCart, emptyCart } from '../store/cartSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
+
 function Carrito() {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);

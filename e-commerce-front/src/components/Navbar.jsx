@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { emptyCart, setCart } from '../store/cartSlice';
 import { clearFavorites } from '../store/favoritesSlice';
 
 function Navbar() {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);

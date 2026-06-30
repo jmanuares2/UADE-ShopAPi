@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, updateUser } from '../store/authSlice';
+
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 
 function Profile() {
-  const { user, login, logout } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [editando, setEditando] = useState(false);
   const [pasoCambioPassword, setPasoCambioPassword] = useState(0); // 0: no, 1: verificar actual, 2: ingresar nueva
   const [form, setForm] = useState({
@@ -31,7 +33,7 @@ function Profile() {
   }
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate('/');
   };
 
@@ -81,12 +83,7 @@ function Profile() {
       };
       const response = await api.put('/perfil', payload);
       const updatedUser = response.data;
-      login({
-        ...user,
-        nombre: updatedUser.nombre,
-        apellido: updatedUser.apellido,
-        email: updatedUser.email,
-      });
+      dispatch(updateUser(updatedUser));
       setSuccessMsg('Perfil y contraseña actualizados correctamente.');
       setEditando(false);
       setPasoCambioPassword(0);
@@ -111,12 +108,7 @@ function Profile() {
       };
       const response = await api.put('/perfil', payload);
       const updatedUser = response.data;
-      login({
-        ...user,
-        nombre: updatedUser.nombre,
-        apellido: updatedUser.apellido,
-        email: updatedUser.email,
-      });
+      dispatch(updateUser(updatedUser));
       setSuccessMsg('Perfil actualizado correctamente.');
       setEditando(false);
       setForm((prev) => ({ ...prev, passwordActual: '', passwordNueva: '', passwordNuevaConfirmar: '' }));

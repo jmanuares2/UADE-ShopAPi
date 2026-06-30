@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
-import { useAuth } from '../context/AuthContext';
+
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const favoriteItems = useSelector((state) => state.favorites.items);
 
