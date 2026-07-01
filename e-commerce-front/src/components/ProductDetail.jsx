@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import { setCart } from '../store/cartSlice';
 
@@ -13,7 +12,7 @@ function ProductDetail() {
 
   // useNavigate permite movernos entre pantallas desde funciones.
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
   const favoriteItems = useSelector((state) => state.favorites.items);

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {loginSuccess } from '../store/authSlice';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 function Register() {
   const [form, setForm] = useState({
@@ -13,7 +14,7 @@ function Register() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,8 +28,14 @@ function Register() {
     try {
       const response = await api.post('/auth/register', form);
       const data = response.data;
-      // AuthResponse: { userId, token, role }
-      login({ userId: data.userId, email: form.email, nombre: form.nombre, apellido: form.apellido, role: data.role });
+
+      dispatch(loginSuccess({
+        userId: data.userId,
+        email: form.email,
+        nombre: form.nombre,
+        apellido: form.apellido,
+        role: data.role
+      }));
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data || 'Error al registrarse');
