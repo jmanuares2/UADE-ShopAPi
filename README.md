@@ -21,7 +21,9 @@ El proyecto incluye:
 | H2 | Tests |
 | React + Vite | Frontend |
 | Axios | Cliente HTTP |
-| Redux Toolkit | Carrito/favoritos |
+| Bootstrap | Estilos del frontend |
+| Redux Toolkit | Estado global (Carrito/favoritos) |
+| Redux Persist | Persistencia del estado de Redux |
 | JWT | Sesion stateless |
 
 ## Configuracion Local
@@ -144,7 +146,7 @@ Respuesta:
 }
 ```
 
-El `token` tambien viene en el body por compatibilidad, pero el frontend real usa la cookie HttpOnly.
+El `token` tambien viene en el body por compatibilidad, pero el frontend real usa la cookie HttpOnly. El campo `role` puede tomar los valores `USER`, `ADMIN` o `VENDEDOR`.
 
 ### Productos - `/api/productos`
 
@@ -153,7 +155,10 @@ El `token` tambien viene en el body por compatibilidad, pero el frontend real us
 | GET | `/api/productos` | Publico | Lista productos ordenados por nombre |
 | GET | `/api/productos/{id}` | Publico | Obtiene producto por ID |
 | GET | `/api/productos/categoria/{categoriaId}` | Publico | Lista productos por categoria |
-| POST | `/api/productos` | Autenticado | Crea producto |
+| GET | `/api/productos/buscar?q={nombre}` | Publico | Busca productos por coincidencia de nombre |
+| GET | `/api/productos/filtrar?precioMin={min}&precioMax={max}` | Publico | Filtra productos por rango de precio |
+| GET | `/api/productos/mis-productos` | Vendedor o ADMIN | Lista productos del creador autenticado |
+| POST | `/api/productos` | Vendedor o ADMIN | Crea producto |
 | PUT | `/api/productos/{id}` | Creador o ADMIN | Actualiza producto |
 | DELETE | `/api/productos/{id}` | Creador o ADMIN | Elimina producto |
 
@@ -164,6 +169,7 @@ Body de creacion/actualizacion:
   "nombre": "Remera Basica Blanca",
   "descripcion": "100% algodon",
   "precio": 15000.0,
+  "descuento": 10,
   "stock": 30,
   "imagenUrl": "https://...",
   "talle": "M",
@@ -171,6 +177,8 @@ Body de creacion/actualizacion:
   "categoriaId": 1
 }
 ```
+
+*Nota:* El campo `descuento` es un entero opcional que representa el porcentaje de descuento (0 a 100).
 
 ### Categorias - `/api/categorias`
 
@@ -205,8 +213,9 @@ Todos los endpoints requieren usuario autenticado.
 | Metodo | Ruta | Descripcion |
 |---|---|---|
 | GET | `/api/carrito` | Ver mi carrito |
-| POST | `/api/carrito/items` | Agregar item |
-| DELETE | `/api/carrito/items/{itemId}` | Quitar item |
+| POST | `/api/carrito/items` | Agregar item al carrito |
+| PUT | `/api/carrito/items/{itemId}?cantidad={N}` | Actualizar cantidad de un item |
+| DELETE | `/api/carrito/items/{itemId}` | Quitar item del carrito |
 | DELETE | `/api/carrito/clear` | Vaciar carrito |
 | POST | `/api/carrito/checkout` | Confirmar compra y descontar stock |
 
@@ -228,6 +237,32 @@ Todos los endpoints requieren usuario autenticado.
 | GET | `/api/favoritos` | Lista mis productos favoritos |
 | POST | `/api/favoritos/{productoId}` | Agrega producto a favoritos |
 | DELETE | `/api/favoritos/{productoId}` | Quita producto de favoritos |
+
+### Perfil - `/api/perfil`
+
+Todos los endpoints requieren usuario autenticado.
+
+| Metodo | Ruta | Descripcion |
+|---|---|---|
+| POST | `/api/perfil/verificar-password` | Verifica si la contraseña actual provista es correcta |
+| PUT | `/api/perfil` | Actualiza la informacion de perfil del usuario |
+
+Verificar contraseña body:
+```json
+{
+  "passwordActual": "pass1234"
+}
+```
+
+### Historial de Compras - `/api/mis-compras`
+
+Todos los endpoints requieren usuario autenticado.
+
+| Metodo | Ruta | Descripcion |
+|---|---|---|
+| GET | `/api/mis-compras` | Obtiene el historial de compras del usuario |
+| DELETE | `/api/mis-compras/{id}` | Elimina una compra específica del historial |
+| DELETE | `/api/mis-compras` | Limpia todo el historial de compras del usuario |
 
 ### Usuarios - `/api/usuarios`
 
@@ -260,11 +295,11 @@ com.uade.tpo.e_commerce
 ## Reglas de Negocio
 
 - `ADMIN` puede gestionar usuarios y categorias.
-- Usuarios autenticados pueden crear productos.
+- Solo los usuarios con rol `ADMIN` o `VENDEDOR` pueden gestionar (crear, actualizar o eliminar) productos.
 - Solo el creador del producto o un `ADMIN` puede modificarlo o eliminarlo.
-- No se permiten precios negativos.
-- El stock se valida al agregar al carrito y al hacer checkout.
-- El checkout descuenta stock y vacia el carrito.
+- No se permiten precios ni stocks negativos. El descuento (si se especifica) debe estar entre 0 y 100.
+- El stock se valida al agregar al carrito, al actualizar cantidad y al hacer checkout.
+- El checkout descuenta stock y vacia el carrito, registrando la compra en el historial.
 - La baja de usuario es logica (`activo=false`).
 - Un usuario dado de baja no puede autenticarse.
 - Una categoria con productos solo se elimina si los productos se reasignan a otra categoria.
