@@ -1,4 +1,6 @@
 import axios from 'axios';
+import store from '../store/store';
+import { logout } from '../store/authSlice';
 
 export const API_URL = 'http://localhost:8080/api';
 
@@ -13,7 +15,17 @@ const api = axios.create({
   },
 });
 
-// Función mock deprecated por compatibilidad si es que queda algo usándolo
+// Si se vence la cookie desloguea automaticamente
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403) {
+      store.dispatch(logout());
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const authHeaders = () => {
   return {};
 };
