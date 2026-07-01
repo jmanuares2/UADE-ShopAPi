@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ProductForm from './ProductForm';
-import { useSelector } from 'react-redux';
-
-
 
 function AdminProductList() {
-  const user = useSelector((state) => state.auth.user);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);

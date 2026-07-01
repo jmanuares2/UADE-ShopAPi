@@ -1,14 +1,12 @@
 import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-
-
+import { useAuth } from '../context/AuthContext';
 
 // Este componente protege una pantalla.
 // Si hay usuario logueado, muestra el contenido.
 // Si no hay usuario, manda al login.
 // Si se provee requiredRole, verifica además que el rol coincida.
 function ProtectedRoute({ children, requiredRole, allowedRoles }) {
-  const user = useSelector((state) => state.auth.user);
+  const { user } = useAuth();
 
   if (!user) {
     return <Navigate to="/login" replace />;

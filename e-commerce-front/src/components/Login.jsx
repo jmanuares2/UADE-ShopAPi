@@ -1,32 +1,31 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-import { useDispatch } from 'react-redux';
-import {loginSuccess } from '../store/authSlice';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();  
     setError(null);
     setLoading(true);
     try {
       const response = await api.post('/auth/login', { email, password });
       const data = response.data;
-      
-      dispatch(loginSuccess({
+      // AuthResponse: { userId, token, role }
+      login({
           userId: data.userId,
           email: email,
           nombre: data.nombre,
           apellido: data.apellido,
           role: data.role
-        }));
+        });
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Credenciales inválidas');
