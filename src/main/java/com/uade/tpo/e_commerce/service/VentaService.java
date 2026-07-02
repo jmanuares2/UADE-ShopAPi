@@ -28,6 +28,9 @@ public class VentaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private NotificacionService notificacionService;
+
     public void guardarVentaDesdeCarrito(Usuario usuario, Carrito carrito) {
         for (ItemCarrito itemCarrito : carrito.getItems()) {
             Venta venta = Venta.builder()
@@ -39,6 +42,17 @@ public class VentaService {
                     .fechaVenta(LocalDateTime.now())
                     .build();
             ventaRepository.save(venta);
+
+            // Le avisamos al vendedor (dueño del producto) que se realizó esta venta.
+            // Se hace de forma defensiva: si algo falla acá, no debe romper la compra.
+            try {
+                notificacionService.crearNotificacionVenta(
+                        itemCarrito.getProducto(),
+                        usuario,
+                        itemCarrito.getCantidad());
+            } catch (Exception e) {
+                System.err.println("No se pudo crear la notificación de venta: " + e.getMessage());
+            }
         }
     }
 

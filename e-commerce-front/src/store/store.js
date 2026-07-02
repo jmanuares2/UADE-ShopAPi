@@ -6,6 +6,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux';
 import authReducer from './authSlice';
 import resenasReducer from './resenaSlice';
+import notificacionesReducer from './notificacionesSlice';
 
 
 const persistConfig = {
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   misCompras: misComprasReducer,
   auth: authReducer,
   resenas: resenasReducer,
+  notificaciones: notificacionesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

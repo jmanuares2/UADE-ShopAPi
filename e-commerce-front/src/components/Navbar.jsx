@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import api from '../services/api';
 import { emptyCart, setCart } from '../store/cartSlice';
 import { clearFavorites } from '../store/favoritesSlice';
+import NotificacionesBell from './NotificacionesBell';
 
 function Navbar() {
   const user = useSelector((state) => state.auth.user);
@@ -112,7 +113,8 @@ function Navbar() {
                   <Link to="/login" className="nav-link nav-cuenta-link fw-semibold" onClick={() => setIsOpen(false)}>Ingresar / Registrarse</Link>
                 </li>
               ) : (
-                <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                 <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                  <NotificacionesBell />
                   <Link
                     className="text-white text-decoration-none fw-semibold d-flex align-items-center px-3 py-2 rounded-pill"
                     style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', transition: 'all 0.3s ease' }}
