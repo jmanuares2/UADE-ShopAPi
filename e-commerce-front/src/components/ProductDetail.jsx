@@ -68,6 +68,8 @@ function ProductDetail() {
   const itemEnCarrito = cartItems.find((item) => item.productoId === product.id);
   const cantidadEnCarrito = itemEnCarrito?.cantidad ?? 0;
 
+  const UMBRAL_ENVIO_GRATIS = 30000;
+
   // Función para calcular precio final con descuento
   const calcularPrecioFinal = () => {
     if (product.descuento > 0) {
@@ -118,6 +120,12 @@ function ProductDetail() {
               </h3>
             )}
           </div>
+          {calcularPrecioFinal() >= UMBRAL_ENVIO_GRATIS && (
+            <div className="alert alert-success py-2 d-flex align-items-center mt-2" role="alert">
+              <i className="bi bi-truck me-2"></i>
+              <span className="fw-semibold">Envío gratis</span>
+            </div>
+          )}
           <p className={product.stock > 0 ? 'text-success' : 'text-danger'}>
             {product.stock > 0 ? `Stock disponible: ${product.stock}` : 'Sin stock'}
           </p>
