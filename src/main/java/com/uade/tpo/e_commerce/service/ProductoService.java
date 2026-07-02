@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.tpo.e_commerce.dto.ProductoRequestDto;
 import com.uade.tpo.e_commerce.dto.ProductoResponseDto;
@@ -19,8 +20,6 @@ import com.uade.tpo.e_commerce.model.Usuario;
 import com.uade.tpo.e_commerce.repository.CategoriaRepository;
 import com.uade.tpo.e_commerce.repository.ProductoRepository;
 import com.uade.tpo.e_commerce.repository.UsuarioRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 @Transactional

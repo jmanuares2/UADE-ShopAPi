@@ -5,6 +5,8 @@ import misComprasReducer from './misComprasSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux';
 import authReducer from './authSlice';
+import resenasReducer from './resenaSlice';
+
 
 const persistConfig = {
   key: 'root',
@@ -27,6 +29,7 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   misCompras: misComprasReducer,
   auth: authReducer,
+  resenas: resenasReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -239,7 +239,15 @@ Todos los endpoints requieren usuario autenticado.
 | DELETE | `/api/favoritos/{productoId}` | Quita producto de favoritos |
 
 ### Perfil - `/api/perfil`
+### Reseñas - `/api/productos/{productoId}/resenas`
 
+| Metodo | Ruta | Acceso | Descripcion |
+|---|---|---|---|
+| POST | `/api/productos/{productoId}/resenas` | Usuario que compró el producto | Crea una nueva reseña para un producto. |
+| GET | `/api/productos/{productoId}/resenas` | Público | Obtiene todas las reseñas de un producto. |
+
+
+### Perfil - `/api/perfil`
 Todos los endpoints requieren usuario autenticado.
 
 | Metodo | Ruta | Descripcion |

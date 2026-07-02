@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../services/api';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
+import Resenas from './Resenas';
 import { setCart } from '../store/cartSlice';
 
 function ProductDetail() {
@@ -36,7 +37,7 @@ function ProductDetail() {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, dispatch]);
 
   const handleAddToCart = async () => {
     try {
@@ -174,6 +175,9 @@ function ProductDetail() {
           )}
         </div>
       </div>
+
+      {/* Componente de Reseñas */}
+      <Resenas productoId={product.id} showForm={false} />
     </div>
   );
 }

@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMisCompras, clearError } from '../store/misComprasSlice';
+import Resenas from './Resenas';
 
 const MisCompras = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items: compras, loading, error } = useSelector((state) => state.misCompras);
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
   const calcularPrecioFinal = (item) => {
     if (item.descuento > 0) {
@@ -18,11 +20,14 @@ const MisCompras = () => {
   useEffect(() => {
     dispatch(fetchMisCompras());
     dispatch(clearError());
-  }, [dispatch]);
 
-  useEffect(() => {
-    console.log('Datos de compras:', compras);
-  }, [compras]);
+    // Limpiar el producto seleccionado si el modal se cierra
+    const modalElement = document.getElementById('reseñaModal');
+    const handleModalClose = () => setProductoSeleccionado(null);
+    modalElement?.addEventListener('hidden.bs.modal', handleModalClose);
+
+    return () => modalElement?.removeEventListener('hidden.bs.modal', handleModalClose);
+  }, [dispatch]);
 
   if (loading) {
     return (
@@ -60,45 +65,66 @@ const MisCompras = () => {
         <h2>Mis Compras</h2>
       </div>
 
-      <div className="card shadow-sm">
-        <div className="card-body">
-          {compras.map((item) => {
-            const precioFinal = calcularPrecioFinal(item);
-            const precioMostrar = item.descuento > 0 ? precioFinal : item.precioUnitario;
-            return (
-              <div key={item.id} className="d-flex justify-content-between align-items-center border-bottom py-3">
-                <div className="d-flex align-items-center">
+      <div className="d-flex flex-column gap-3">
+        {compras.map((item) => {
+          const precioFinal = calcularPrecioFinal(item);
+          const precioMostrar = item.descuento > 0 ? precioFinal : item.precioUnitario;
+          return (
+            <div key={item.id} className="card shadow-sm">
+              <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div className="d-flex align-items-center" style={{ flex: '1 1 300px' }}>
                   {item.imagenProducto && (
                     <img
                       src={item.imagenProducto}
                       alt={item.nombreProducto}
-                      style={{ width: '60px', height: '60px', objectFit: 'cover', marginRight: '1rem' }}
+                      className="rounded"
+                      style={{ width: '70px', height: '70px', objectFit: 'cover', marginRight: '1rem' }}
                     />
                   )}
-                  <div>
-                    <h6 className="mb-0 d-flex align-items-center">
-                      {item.nombreProducto}
-                      {item.descuento > 0 && (
-                        <span className="badge bg-danger ms-2">-{item.descuento}%</span>
-                      )}
-                    </h6>
+                  <div className="d-flex flex-column">
+                    <h6 className="mb-1">{item.nombreProducto}</h6>
                     <small className="text-muted">
-                      Cantidad: {item.cantidad} - Precio: 
-                      <span className={item.descuento > 0 ? 'text-danger ms-1' : 'ms-1'}>
-                        ${Math.round(Number(precioMostrar || 0)).toLocaleString('es-AR')}
-                      </span>
-                      - Fecha: {new Date(item.fechaVenta).toLocaleString('es-AR')}
+                      Comprado el: {new Date(item.fechaVenta).toLocaleDateString()}
+                    </small>
+                    <small className="text-muted">
+                      Cantidad: {item.cantidad} | Precio unitario: ${Math.round(Number(precioMostrar || 0)).toLocaleString('es-AR')}
                     </small>
                   </div>
                 </div>
-                <div className="d-flex align-items-center">
-                  <span className="fw-bold fs-5 text-success">
+                <div className="d-flex align-items-center gap-3" style={{ flex: '1 1 200px', justifyContent: 'end' }}>
+                  <span className="fw-bold fs-5">
                     ${Math.round(Number((item.descuento > 0 ? precioFinal * item.cantidad : item.subtotal || 0))).toLocaleString('es-AR')}
                   </span>
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => setProductoSeleccionado(item)}
+                    data-bs-toggle="modal" data-bs-target="#reseñaModal"
+                  >
+                    Dejar reseña
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Modal para Reseñas */}
+      <div className="modal fade" id="reseñaModal" tabIndex="-1" aria-labelledby="reseñaModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="reseñaModalLabel">
+                Opinión sobre: {productoSeleccionado?.nombreProducto}
+              </h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              {productoSeleccionado && (
+                <Resenas productoId={productoSeleccionado.productoId} showForm={true} />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
