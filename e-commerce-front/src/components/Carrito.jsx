@@ -96,6 +96,15 @@ function Carrito() {
   );
   if (error) return <div className="container mt-4"><p className="text-danger">{error}</p></div>;
 
+  const UMBRAL_ENVIO_GRATIS = 30000;
+  const COSTO_ENVIO = 3800;
+
+  const totalProductos = cartItems.reduce((acc, i) => acc + calcularPrecioFinal(i) * i.cantidad, 0);
+
+  const aplicaEnvioGratis = totalProductos >= UMBRAL_ENVIO_GRATIS || totalProductos === 0;
+  const costoEnvioFinal = aplicaEnvioGratis ? 0 : COSTO_ENVIO;
+  const totalFinal = totalProductos + costoEnvioFinal;
+
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Mi Carrito</h2>
@@ -197,15 +206,29 @@ function Carrito() {
             </table>
           </div>
 
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-start">
             <button className="btn btn-outline-danger" onClick={handleClear}>
               Vaciar carrito
             </button>
-            <div className="text-end">
-              <p className="fs-5 fw-bold mb-2">
-                Total: ${Math.round(cartItems.reduce((acc, i) => acc + calcularPrecioFinal(i) * i.cantidad, 0)).toLocaleString('es-AR')}
-              </p>
-              <button className="btn btn-success btn-lg" onClick={handleCheckout}>
+            <div className="text-end" style={{ minWidth: '300px' }}>
+              <div className="d-flex justify-content-between">
+                <span className="text-muted">Subtotal:</span>
+                <span>${Math.round(totalProductos).toLocaleString('es-AR')}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span className="text-muted">Envío:</span>
+                {aplicaEnvioGratis ? (
+                  <span className="text-success">Gratis</span>
+                ) : (
+                  <span>${costoEnvioFinal.toLocaleString('es-AR')}</span>
+                )}
+              </div>
+              <hr className="my-2" />
+              <div className="d-flex justify-content-between fs-5 fw-bold">
+                <span>Total:</span>
+                <span>${Math.round(totalFinal).toLocaleString('es-AR')}</span>
+              </div>
+              <button className="btn btn-success btn-lg mt-3 w-100" onClick={handleCheckout}>
                 Confirmar compra
               </button>
             </div>

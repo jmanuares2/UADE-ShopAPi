@@ -69,6 +69,7 @@ function ProductDetail() {
   const cantidadEnCarrito = itemEnCarrito?.cantidad ?? 0;
 
   const UMBRAL_ENVIO_GRATIS = 30000;
+  const COSTO_ENVIO = 3800;
 
   // Función para calcular precio final con descuento
   const calcularPrecioFinal = () => {
@@ -120,10 +121,15 @@ function ProductDetail() {
               </h3>
             )}
           </div>
-          {calcularPrecioFinal() >= UMBRAL_ENVIO_GRATIS && (
+          {calcularPrecioFinal() >= UMBRAL_ENVIO_GRATIS ? (
             <div className="alert alert-success py-2 d-flex align-items-center mt-2" role="alert">
               <i className="bi bi-truck me-2"></i>
               <span className="fw-semibold">Envío gratis</span>
+            </div>
+          ) : (
+            <div className="alert alert-info py-2 d-flex align-items-center mt-2" role="alert">
+              <i className="bi bi-truck me-2"></i>
+              <span>Costo de envío: ${COSTO_ENVIO.toLocaleString('es-AR')}</span>
             </div>
           )}
           <p className={product.stock > 0 ? 'text-success' : 'text-danger'}>
