@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   fetchNotificaciones,
   fetchCantidadNoLeidas,
@@ -11,6 +12,7 @@ const INTERVALO_POLLING_MS = 30000; // revisa notificaciones nuevas cada 30s
 
 function NotificacionesBell() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const notificaciones = useSelector((state) => state.notificaciones.items);
   const cantidadNoLeidas = useSelector((state) => state.notificaciones.cantidadNoLeidas);
@@ -54,6 +56,10 @@ function NotificacionesBell() {
   const handleNotifClick = (notif) => {
     if (!notif.leida) {
       dispatch(marcarComoLeida(notif.id));
+    }
+    setAbierto(false);
+    if (notif.productoId) {
+      navigate(`/productos/${notif.productoId}`);
     }
   };
 
