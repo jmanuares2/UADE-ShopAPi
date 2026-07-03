@@ -221,7 +221,10 @@ function ProductDetail() {
             />
           )}
           {activeTab === 'opiniones' && (
-            <Resenas productoId={product.id}/>
+            <Resenas
+              productoId={product.id}
+              vendedorId={product.creadorId}
+            />
           )}
         </div>
       </div>
