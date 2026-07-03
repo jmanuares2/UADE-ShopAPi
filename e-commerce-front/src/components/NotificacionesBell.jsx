@@ -18,11 +18,11 @@ function NotificacionesBell() {
   const [abierto, setAbierto] = useState(false);
   const contenedorRef = useRef(null);
 
-  // Polling: mientras haya usuario logueado, chequea cada 30s si hay notificaciones nuevas.
+  // Polling: mientras haya cualquier usuario logueado (comprador, vendedor o admin),
+  // chequea cada 30s si hay notificaciones nuevas. Un comprador recibe notificaciones
+  // de "te respondieron tu pregunta"; un vendedor recibe las de venta y pregunta nueva.
   useEffect(() => {
-    if (!user || (user.role !== 'VENDEDOR' && user.role !== 'ADMIN')) {
-      return;
-    }
+    if (!user) return;
 
     dispatch(fetchCantidadNoLeidas());
     const intervalo = setInterval(() => {
@@ -67,10 +67,8 @@ function NotificacionesBell() {
     return new Date(fecha).toLocaleDateString('es-AR');
   };
 
-  // La campana solo es visible para vendedores y administradores.
-  if (!user || (user.role !== 'VENDEDOR' && user.role !== 'ADMIN')) {
-    return null;
-  }
+  // La campana es visible para cualquier usuario logueado.
+  if (!user) return null;
 
   return (
     <div className="position-relative" ref={contenedorRef}>

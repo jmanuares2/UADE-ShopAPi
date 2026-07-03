@@ -7,6 +7,7 @@ import { combineReducers } from 'redux';
 import authReducer from './authSlice';
 import resenasReducer from './resenaSlice';
 import notificacionesReducer from './notificacionesSlice';
+import preguntasReducer from './preguntaSlice';
 
 
 const persistConfig = {
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   resenas: resenasReducer,
   notificaciones: notificacionesReducer,
+  preguntas: preguntasReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

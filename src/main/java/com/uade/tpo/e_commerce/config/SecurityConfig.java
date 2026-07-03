@@ -91,6 +91,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos/mis-productos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/resenas/producto/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/preguntas/producto/**").permitAll()
 
                         // Protegidos por rol: productos (sólo ADMIN y VENDEDOR)
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole(Role.ADMIN.name(), Role.VENDEDOR.name())
@@ -107,6 +109,7 @@ public class SecurityConfig {
         .requestMatchers("/api/carrito/**").authenticated()
         .requestMatchers("/api/perfil/**").authenticated()
         .requestMatchers("/api/mis-compras/**").authenticated()
+        .requestMatchers("/api/notificaciones/**").authenticated()
 
                         // Fallback
                         .anyRequest().authenticated())

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../services/api';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
+import Preguntas from './Preguntas';
 import Resenas from './Resenas';
 import { setCart } from '../store/cartSlice';
 
@@ -24,6 +25,7 @@ function ProductDetail() {
   const [cantidad, setCantidad] = useState(1);
   const [cartMsg, setCartMsg] = useState(null);
   const [cartMsgType, setCartMsgType] = useState('success');
+  const [activeTab, setActiveTab] = useState('preguntas');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -190,8 +192,39 @@ function ProductDetail() {
         </div>
       </div>
 
-      {/* Componente de Reseñas */}
-      <Resenas productoId={product.id} showForm={false} />
+      <div className="mt-5">
+        <ul className="nav nav-tabs" id="myTab" role="tablist">
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === 'preguntas' ? 'active' : ''}`}
+              onClick={() => setActiveTab('preguntas')}
+              type="button"
+            >
+              Preguntas y Respuestas
+            </button>
+          </li>
+          <li className="nav-item" role="presentation">
+            <button
+              className={`nav-link ${activeTab === 'opiniones' ? 'active' : ''}`}
+              onClick={() => setActiveTab('opiniones')}
+              type="button"
+            >
+              Opiniones
+            </button>
+          </li>
+        </ul>
+        <div className="tab-content pt-4">
+          {activeTab === 'preguntas' && (
+            <Preguntas
+              productoId={product.id}
+              vendedorId={product.creadorId}
+            />
+          )}
+          {activeTab === 'opiniones' && (
+            <Resenas productoId={product.id}/>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
